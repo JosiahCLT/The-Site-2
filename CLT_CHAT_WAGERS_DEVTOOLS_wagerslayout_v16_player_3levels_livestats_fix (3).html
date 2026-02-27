@@ -3959,6 +3959,8 @@ body:before{display:block !important;}
   display:none;
   z-index:9999;
   padding:var(--ballzInset, 34px);
+  align-items:center;
+  justify-content:center;
   background:
 radial-gradient(900px 560px at 12% 2%, color-mix(in srgb, var(--accent) 22%, transparent), transparent 55%),
 radial-gradient(900px 560px at 92% 10%, color-mix(in srgb, var(--accent2) 18%, transparent), transparent 55%),
@@ -3966,11 +3968,11 @@ linear-gradient(180deg, var(--bg0), var(--bg1));
   pointer-events:auto;
   box-sizing:border-box;
 }
-.gameOverlay.show{display:block}
+.gameOverlay.show{display:flex}
 
 .gameShell{
-  width:100%;
-  height:100%;
+  width:min(100%, 1360px);
+  height:min(100%, 860px);
   border-radius:0px;
   overflow:hidden;
   border:1px solid rgba(255,255,255,.10);
@@ -4006,7 +4008,7 @@ linear-gradient(180deg, var(--bg0), var(--bg1));
   gap:10px;
   padding:0 10px;
   border-top:1px solid rgba(255,255,255,.08);
-  background:color-mix(in srgb, var(--panel2) 88%, #000 12%);
+  background:color-mix(in srgb, #0a0f1a 92%, #000 8%);
 }
 .pBarLeft, .pBarRight{display:flex; align-items:center; gap:8px;}
 .pBarTitle{
@@ -4038,6 +4040,7 @@ linear-gradient(180deg, var(--bg0), var(--bg1));
 .pCtrl svg{width:18px;height:18px}
 
 body.ballzTheatre .gameOverlay{padding:16px}
+body.ballzTheatre .gameShell{width:100%;height:100%}
 
 body.ballzFullscreen .gameOverlay{padding:0}
 body.ballzFullscreen .gameShell{border-radius:0;border:0;box-shadow:none}
@@ -22462,7 +22465,7 @@ body.timerLeft .topbar .timerPill .timerBar{
   --ballzLeft: 260px;
   --ballzRight: 320px;
   --ballzTop: 62px;
-  --ballzInset: 34px;
+  --ballzInset: 72px;
 }
 /* prevent the main scroll from scrolling while player is open */
 body.ballzOpen #scroll{ overflow:hidden !important; }
