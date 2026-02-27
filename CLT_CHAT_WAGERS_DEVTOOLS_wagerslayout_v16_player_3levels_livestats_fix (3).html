@@ -3961,10 +3961,7 @@ body:before{display:block !important;}
   padding:var(--ballzInset, 34px);
   align-items:center;
   justify-content:center;
-  background:
-radial-gradient(900px 560px at 12% 2%, color-mix(in srgb, var(--accent) 22%, transparent), transparent 55%),
-radial-gradient(900px 560px at 92% 10%, color-mix(in srgb, var(--accent2) 18%, transparent), transparent 55%),
-linear-gradient(180deg, var(--bg0), var(--bg1));
+  background:transparent;
   pointer-events:auto;
   box-sizing:border-box;
 }
@@ -3987,13 +3984,18 @@ linear-gradient(180deg, var(--bg0), var(--bg1));
   position:relative;
   flex:1;
   min-height:0;
-  display:flex;
-  flex-direction:column;
-  overflow:hidden;
+  display:block;
+  overflow:auto;
   background:transparent;
 }
+.playerGameStage{
+  position:relative;
+  width:100%;
+  height:clamp(420px, 70vh, 760px);
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
 .gameFrame{
-  flex:1;
+  flex:none;
   width:100%;
   height:100%;
   border:0;
@@ -4010,6 +4012,32 @@ linear-gradient(180deg, var(--bg0), var(--bg1));
   border-top:1px solid rgba(255,255,255,.08);
   background:color-mix(in srgb, #0a0f1a 92%, #000 8%);
 }
+.playerDetails{
+  padding:18px;
+  background:color-mix(in srgb, var(--panel2) 82%, #000 18%);
+}
+.pdCard{border:1px solid rgba(255,255,255,.08);background:rgba(11,18,32,.70);border-radius:14px;padding:16px;margin-top:14px}
+.pdCard:first-child{margin-top:0}
+.pdHead{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+.pdTitle{font-size:28px;font-weight:1200;letter-spacing:.3px}
+.pdSub{font-size:12px;color:rgba(255,255,255,.66);font-weight:900}
+.pdToggle{border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:rgba(255,255,255,.92);border-radius:12px;padding:8px 12px;font-weight:1000;cursor:pointer}
+.pdTabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.pdTab{border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:rgba(255,255,255,.85);border-radius:999px;padding:10px 14px;font-weight:1000;cursor:pointer}
+.pdTab.active{background:rgba(140,200,255,.22);color:#fff;border-color:rgba(140,200,255,.5)}
+.pdPane{display:none}
+.pdPane.active{display:block}
+.pdTable{width:100%;border-collapse:collapse;overflow:hidden;border-radius:10px}
+.pdTable th,.pdTable td{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.08);text-align:left}
+.pdTable th{font-size:12px;color:rgba(255,255,255,.68);text-transform:uppercase;letter-spacing:.5px}
+.pdTable td{font-weight:900;color:rgba(255,255,255,.88)}
+.pdText{color:rgba(255,255,255,.78);line-height:1.5}
+.pdRecommend{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px}
+.pdGame{border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:10px;background:rgba(255,255,255,.04)}
+.pdGameArt{height:120px;border-radius:10px;background:linear-gradient(135deg, rgba(80,170,255,.45), rgba(166,93,255,.42));margin-bottom:8px}
+.pdGameName{font-size:13px;font-weight:1000}
+.pdGameMeta{font-size:11px;color:rgba(255,255,255,.62);margin-top:4px}
+.pdCollapsed .pdBody{display:none}
 .pBarLeft, .pBarRight{display:flex; align-items:center; gap:8px;}
 .pBarTitle{
   display:flex;
@@ -4045,6 +4073,7 @@ body.ballzTheatre .gameShell{width:100%;height:100%}
 body.ballzFullscreen .gameOverlay{padding:0}
 body.ballzFullscreen .gameShell{border-radius:0;border:0;box-shadow:none}
 body.ballzFullscreen .playerBottomBar{display:none}
+body.ballzFullscreen .playerDetails{display:none}
 
 /* v35: clean, flush tools row + embedded Random button (provider picker) */
 .gridToolsRow{
@@ -14249,7 +14278,9 @@ document.getElementById('devResetClaimables')?.addEventListener('click', (e)=>{
 <div class="gameOverlay" id="gameOverlay" aria-hidden="true">
   <div class="gameShell" id="gameShell" role="dialog" aria-label="Ballz">
     <div class="playerWrap" id="playerWrap">
-      <iframe class="gameFrame" id="gameFrame" title="Ballz" allow="fullscreen" allowfullscreen></iframe>
+      <div class="playerGameStage">
+        <iframe class="gameFrame" id="gameFrame" title="Ballz" allow="fullscreen" allowfullscreen></iframe>
+      </div>
 
       <div class="playerBottomBar" aria-label="Player controls">
         <div class="pBarLeft">
@@ -14263,6 +14294,99 @@ document.getElementById('devResetClaimables')?.addEventListener('click', (e)=>{
         </div>
 
         <div class="pBarRight"></div>
+      </div>
+
+      <div class="playerDetails" id="playerDetails">
+        <section class="pdCard">
+          <div class="pdHead">
+            <div>
+              <div class="pdTitle">Ballz</div>
+              <div class="pdSub">Placeholder game info • house edge placeholder • quests placeholder</div>
+            </div>
+            <button class="pdToggle" id="pdInfoToggle" type="button" aria-expanded="true">Collapse</button>
+          </div>
+          <div class="pdBody" id="pdInfoBody">
+            <div class="pdTabs" id="pdInfoTabs">
+              <button class="pdTab active" data-pane="bigwins" type="button">Big Wins</button>
+              <button class="pdTab" data-pane="luckywins" type="button">Lucky Wins</button>
+              <button class="pdTab" data-pane="challenges" type="button">Challenges</button>
+              <button class="pdTab" data-pane="description" type="button">Description</button>
+            </div>
+            <div class="pdPane active" data-pane="bigwins">
+              <table class="pdTable">
+                <thead><tr><th>Rank</th><th>User</th><th>Date</th><th>Amount</th><th>Multiplier</th><th>Winnings</th></tr></thead>
+                <tbody>
+                  <tr><td>#1</td><td>PlaceholderUser1</td><td>Placeholder Date</td><td>$250,000.00</td><td>30×</td><td>$7,500,000.00</td></tr>
+                  <tr><td>#2</td><td>PlaceholderUser2</td><td>Placeholder Date</td><td>$120,000.00</td><td>18×</td><td>$2,160,000.00</td></tr>
+                  <tr><td>#3</td><td>PlaceholderUser3</td><td>Placeholder Date</td><td>$75,000.00</td><td>14×</td><td>$1,050,000.00</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="pdPane" data-pane="luckywins">
+              <table class="pdTable">
+                <thead><tr><th>Rank</th><th>User</th><th>Date</th><th>Bet</th><th>Multiplier</th><th>Payout</th></tr></thead>
+                <tbody>
+                  <tr><td>#1</td><td>PlaceholderUserA</td><td>Placeholder Date</td><td>$4.00</td><td>1150×</td><td>$4,600.00</td></tr>
+                  <tr><td>#2</td><td>PlaceholderUserB</td><td>Placeholder Date</td><td>$1.00</td><td>980×</td><td>$980.00</td></tr>
+                  <tr><td>#3</td><td>PlaceholderUserC</td><td>Placeholder Date</td><td>$3.50</td><td>720×</td><td>$2,520.00</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="pdPane" data-pane="challenges">
+              <div class="pdText">Quest placeholders: daily mission placeholder, weekly streak placeholder, and special event placeholder.</div>
+            </div>
+            <div class="pdPane" data-pane="description">
+              <div class="pdText">Game description placeholder. House edge placeholder. Volatility placeholder. Max win placeholder.</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="pdCard">
+          <div class="pdHead"><div class="pdTitle" style="font-size:22px">Recommended</div></div>
+          <div class="pdRecommend">
+            <div class="pdGame"><div class="pdGameArt"></div><div class="pdGameName">Recommended Game 1</div><div class="pdGameMeta">Placeholder Provider</div></div>
+            <div class="pdGame"><div class="pdGameArt"></div><div class="pdGameName">Recommended Game 2</div><div class="pdGameMeta">Placeholder Provider</div></div>
+            <div class="pdGame"><div class="pdGameArt"></div><div class="pdGameName">Recommended Game 3</div><div class="pdGameMeta">Placeholder Provider</div></div>
+            <div class="pdGame"><div class="pdGameArt"></div><div class="pdGameName">Recommended Game 4</div><div class="pdGameMeta">Placeholder Provider</div></div>
+            <div class="pdGame"><div class="pdGameArt"></div><div class="pdGameName">Recommended Game 5</div><div class="pdGameMeta">Placeholder Provider</div></div>
+            <div class="pdGame"><div class="pdGameArt"></div><div class="pdGameName">Recommended Game 6</div><div class="pdGameMeta">Placeholder Provider</div></div>
+          </div>
+        </section>
+
+        <section class="pdCard">
+          <div class="pdTabs" id="pdBetTabs">
+            <button class="pdTab active" data-pane="mygames" type="button">My Games</button>
+            <button class="pdTab" data-pane="allgames" type="button">All Games</button>
+            <button class="pdTab" data-pane="highrollers" type="button">High Rollers</button>
+          </div>
+          <div class="pdPane active" data-pane="mygames">
+            <table class="pdTable">
+              <thead><tr><th>Game</th><th>Time</th><th>Amount</th><th>Multiplier</th><th>Result</th></tr></thead>
+              <tbody>
+                <tr><td>Ballz</td><td>9:57 AM</td><td>$25.00</td><td>3.5×</td><td>$87.50</td></tr>
+                <tr><td>Ballz</td><td>9:41 AM</td><td>$10.00</td><td>0.8×</td><td>-$2.00</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="pdPane" data-pane="allgames">
+            <table class="pdTable">
+              <thead><tr><th>User</th><th>Game</th><th>Time</th><th>Amount</th><th>Result</th></tr></thead>
+              <tbody>
+                <tr><td>SiteUser001</td><td>Le Fisherman</td><td>9:59 AM</td><td>$100.00</td><td>$420.00</td></tr>
+                <tr><td>SiteUser002</td><td>Ballz</td><td>9:58 AM</td><td>$12.00</td><td>-$12.00</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="pdPane" data-pane="highrollers">
+            <table class="pdTable">
+              <thead><tr><th>User</th><th>Game</th><th>Time</th><th>Amount</th><th>Result</th></tr></thead>
+              <tbody>
+                <tr><td>WhaleAlpha</td><td>Plinko</td><td>9:54 AM</td><td>$15,000.00</td><td>$45,000.00</td></tr>
+                <tr><td>WhaleBeta</td><td>Blackjack</td><td>9:52 AM</td><td>$8,000.00</td><td>-$8,000.00</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
       </div>
     </div>
   </div>
@@ -22493,6 +22617,38 @@ body.ballzOpen .gameOverlay{ top: var(--ballzTop) !important; left: var(--ballzL
   var btnTheatre = byId('btnTheatre');
   var btnFull    = byId('btnFull');
 
+  function bindTabGroup(groupId){
+    var group = byId(groupId);
+    if(!group || group.dataset.bound === '1') return;
+    group.dataset.bound = '1';
+    group.addEventListener('click', function(e){
+      var btn = e.target.closest('.pdTab[data-pane]');
+      if(!btn) return;
+      var pane = btn.getAttribute('data-pane');
+      var host = group.closest('.pdCard') || document;
+      host.querySelectorAll('.pdTab[data-pane]').forEach(function(el){ el.classList.toggle('active', el === btn); });
+      host.querySelectorAll('.pdPane[data-pane]').forEach(function(el){ el.classList.toggle('active', el.getAttribute('data-pane') === pane); });
+    });
+  }
+
+  function bindInfoToggle(){
+    var btn = byId('pdInfoToggle');
+    var card = btn ? btn.closest('.pdCard') : null;
+    if(!btn || !card || btn.dataset.bound === '1') return;
+    btn.dataset.bound = '1';
+    btn.addEventListener('click', function(){
+      var collapsed = card.classList.toggle('pdCollapsed');
+      btn.textContent = collapsed ? 'Expand' : 'Collapse';
+      btn.setAttribute('aria-expanded', String(!collapsed));
+    });
+  }
+
+  function initPlayerDetails(){
+    bindTabGroup('pdInfoTabs');
+    bindTabGroup('pdBetTabs');
+    bindInfoToggle();
+  }
+
   function toastSafe(icon, msg){
     try{
       if(typeof toast === 'function') toast(icon, msg);
@@ -22574,6 +22730,7 @@ body.ballzOpen .gameOverlay{ top: var(--ballzTop) !important; left: var(--ballzL
 
   window.launchBallz = openBallz;
   window.closeBallz = closeBallz;
+  initPlayerDetails();
 
   if(btnClose){
     btnClose.addEventListener('click', function(e){
