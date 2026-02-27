@@ -3958,11 +3958,9 @@ body:before{display:block !important;}
   inset:0;
   display:none;
   z-index:9999;
-  padding:var(--ballzInset, 34px);
-  background:
-radial-gradient(900px 560px at 12% 2%, color-mix(in srgb, var(--accent) 22%, transparent), transparent 55%),
-radial-gradient(900px 560px at 92% 10%, color-mix(in srgb, var(--accent2) 18%, transparent), transparent 55%),
-linear-gradient(180deg, var(--bg0), var(--bg1));
+  padding:var(--ballzInset, 18px);
+  /* Keep dead-space identical to the site backdrop instead of rendering a separate player backdrop. */
+  background:transparent;
   pointer-events:auto;
   box-sizing:border-box;
 }
@@ -4037,7 +4035,7 @@ linear-gradient(180deg, var(--bg0), var(--bg1));
 .pCtrl.active{background:rgba(255,255,255,.08); border-color:rgba(255,255,255,.20); color:rgba(255,255,255,.95);}
 .pCtrl svg{width:18px;height:18px}
 
-body.ballzTheatre .gameOverlay{padding:16px}
+body.ballzTheatre .gameOverlay{padding:6px}
 
 body.ballzFullscreen .gameOverlay{padding:0}
 body.ballzFullscreen .gameShell{border-radius:0;border:0;box-shadow:none}
@@ -22462,7 +22460,7 @@ body.timerLeft .topbar .timerPill .timerBar{
   --ballzLeft: 260px;
   --ballzRight: 320px;
   --ballzTop: 62px;
-  --ballzInset: 34px;
+  --ballzInset: 12px;
 }
 /* prevent the main scroll from scrolling while player is open */
 body.ballzOpen #scroll{ overflow:hidden !important; }
@@ -22471,6 +22469,13 @@ body.ballzOpen #scroll{ overflow:hidden !important; }
 body.ballzOpen .gameOverlay{ top: var(--ballzTop) !important; left: var(--ballzLeft) !important; right: var(--ballzRight) !important; bottom:0 !important; }
 
 /* Theatre = tighter spacing with the same shell visible */
+body.ballzTheatre{
+  --ballzInset: 2px;
+}
+body.ballzTheatre .gameOverlay{
+  top: calc(var(--ballzTop) - 6px) !important;
+  padding:2px !important;
+}
 </style>
 
 <script id="clt-ballz-player-boot-v14">
