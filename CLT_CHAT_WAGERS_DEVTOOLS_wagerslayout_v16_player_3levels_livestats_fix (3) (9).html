@@ -3966,6 +3966,7 @@ body:before{display:block !important;}
   box-sizing:border-box;
 }
 .gameOverlay.show{display:flex}
+body.ballzOpen .gameOverlay{align-items:stretch;justify-content:flex-start}
 
 .gameShell{
   width:min(100%, var(--ballzTheatreWidth, calc(100vw - 580px)), 1360px);
@@ -3993,7 +3994,7 @@ body:before{display:block !important;}
   position:relative;
   width:100%;
   flex:none;
-  height:clamp(380px, 56vh, 700px);
+  height:clamp(460px, 68vh, 860px);
   border-bottom:1px solid rgba(255,255,255,.06);
 }
 .gameFrame{
@@ -4116,6 +4117,7 @@ body:before{display:block !important;}
 
 
 body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .playerWrap{overflow:hidden}
+body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .playerGameStage{flex:1 1 auto;height:auto;min-height:0}
 body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .playerDetails{
   padding:12px 14px 14px;
   background:var(--railCoverSolid, #0b0b12);
