@@ -3958,7 +3958,7 @@ body:before{display:block !important;}
   inset:0;
   display:none;
   z-index:9999;
-  padding:var(--ballzInset, 34px);
+  padding:var(--ballzInset, 34px) var(--ballzInset, 34px) 0;
   background:
 radial-gradient(900px 560px at 12% 2%, color-mix(in srgb, var(--accent) 22%, transparent), transparent 55%),
 radial-gradient(900px 560px at 92% 10%, color-mix(in srgb, var(--accent2) 18%, transparent), transparent 55%),
@@ -4013,9 +4013,9 @@ linear-gradient(180deg, var(--bg0), var(--bg1));
   display:flex;
   align-items:center;
   gap:8px;
-  font-weight:1100;
-  color:rgba(255,255,255,.74);
-  font-size:12px;
+  font-weight:1200;
+  color:rgba(255,255,255,.9);
+  font-size:16px;
   letter-spacing:.4px;
   user-select:none;
 }
@@ -4027,6 +4027,7 @@ linear-gradient(180deg, var(--bg0), var(--bg1));
 
 .pCtrl{
   width:34px;height:34px;border-radius:10px;
+  line-height:0;
   border:1px solid rgba(255,255,255,.10);
   background:rgba(0,0,0,.30);
   color:rgba(255,255,255,.82);
@@ -4035,7 +4036,7 @@ linear-gradient(180deg, var(--bg0), var(--bg1));
 }
 .pCtrl:hover{background:rgba(255,255,255,.06); border-color:rgba(255,255,255,.16);}
 .pCtrl.active{background:rgba(255,255,255,.08); border-color:rgba(255,255,255,.20); color:rgba(255,255,255,.95);}
-.pCtrl svg{width:18px;height:18px}
+.pCtrl svg{width:18px;height:18px;display:block;margin:auto}
 
 body.ballzTheatre .gameOverlay{padding:16px}
 
@@ -11352,6 +11353,9 @@ wireGridControls();
 }
 
 function setPage(page){
+if(document.body.classList.contains('ballzOpen') && typeof window.closeBallz === "function"){
+  window.closeBallz();
+}
 LAST_PAGE = CURRENT_PAGE;
 CURRENT_PAGE = page;
 const isLobby = (page === 'Lobby');
@@ -14311,10 +14315,9 @@ document.getElementById('devResetClaimables')?.addEventListener('click', (e)=>{
     font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
     color:var(--txt);
     background:
-      radial-gradient(1200px 700px at 18% 12%, rgba(54,214,255,.14), transparent 62%),
-      radial-gradient(900px 700px at 82% 18%, rgba(139,92,255,.14), transparent 62%),
-      radial-gradient(900px 900px at 42% 92%, rgba(255,215,106,.10), transparent 65%),
-      linear-gradient(180deg, var(--bg0), var(--bg1));
+      radial-gradient(900px 560px at 12% 2%, rgba(251,44,54,.22), transparent 55%),
+      radial-gradient(900px 560px at 92% 10%, rgba(255,122,24,.18), transparent 55%),
+      linear-gradient(180deg, #07070b, #0b0b12);
     overflow:hidden;
   }
 
