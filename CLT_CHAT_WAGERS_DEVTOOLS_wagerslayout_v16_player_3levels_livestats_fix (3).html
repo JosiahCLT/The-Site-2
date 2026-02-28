@@ -3961,10 +3961,7 @@ body:before{display:block !important;}
   padding:var(--ballzInset, 34px);
   align-items:center;
   justify-content:center;
-  background:
-radial-gradient(900px 560px at 12% 2%, color-mix(in srgb, var(--accent) 20%, transparent), transparent 55%),
-radial-gradient(900px 560px at 92% 10%, color-mix(in srgb, var(--accent2) 16%, transparent), transparent 55%),
-linear-gradient(180deg, color-mix(in srgb, var(--bg0) 96%, #000 4%), color-mix(in srgb, var(--bg1) 96%, #000 4%));
+  background:linear-gradient(180deg, var(--bg0), var(--bg1));
   pointer-events:auto;
   box-sizing:border-box;
 }
@@ -4053,6 +4050,16 @@ linear-gradient(180deg, color-mix(in srgb, var(--bg0) 96%, #000 4%), color-mix(i
 .pdBetRight{display:flex;align-items:center;gap:8px}
 .pdMiniBtn{height:36px;min-width:36px;padding:0 12px;border-radius:10px;border:1px solid rgba(255,255,255,.14);background:rgba(111,161,190,.35);color:#fff;font-weight:1000;cursor:pointer}
 .pdMiniBtn.icon{padding:0;width:36px}
+.pdBetSelect{
+  height:36px;
+  min-width:120px;
+  border-radius:10px;
+  border:1px solid rgba(255,255,255,.14);
+  background:rgba(111,161,190,.35);
+  color:#fff;
+  font-weight:1000;
+  padding:0 36px 0 12px;
+}
 .pdCollapsed .pdBody{display:none}
 .pBarLeft, .pBarRight{display:flex; align-items:center; gap:8px;}
 .pBarTitle{
@@ -14317,7 +14324,6 @@ document.getElementById('devResetClaimables')?.addEventListener('click', (e)=>{
           <div class="pdHead">
             <div>
               <div class="pdTitle">Ballz</div>
-              <div class="pdSub">Arcade Original • House Edge 2.5% • Medium Volatility</div>
             </div>
             <button class="pdToggle" id="pdInfoToggle" type="button" aria-label="Expand details" aria-expanded="false" title="Expand details">
               <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m8 10 4 4 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -14379,9 +14385,13 @@ document.getElementById('devResetClaimables')?.addEventListener('click', (e)=>{
               <button class="pdTab" data-pane="highrollers" type="button">High Rollers</button>
             </div>
             <div class="pdBetRight">
-              <button class="pdMiniBtn icon" type="button" title="Hide muted"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 9h3l4-3v12l-4-3H5z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="m15 9 4 6M19 9l-4 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
-              <button class="pdMiniBtn" type="button">10 ▾</button>
-              <button class="pdMiniBtn" type="button">View More</button>
+              <select class="pdBetSelect" id="pdBetLimit" aria-label="View more bets">
+                <option value="5" selected>View 5 Bets</option>
+                <option value="10">View 10 Bets</option>
+                <option value="20">View 20 Bets</option>
+                <option value="40">View 40 Bets</option>
+                <option value="0">View All Bets</option>
+              </select>
             </div>
           </div>
           <div class="pdPane active" data-pane="mygames">
@@ -22674,6 +22684,20 @@ body.ballzOpen .gameOverlay{ top: var(--ballzTop) !important; left: var(--ballzL
     bindTabGroup('pdInfoTabs');
     bindTabGroup('pdBetTabs');
     bindInfoToggle();
+    var limitSel = byId('pdBetLimit');
+    if(limitSel && limitSel.dataset.bound !== '1'){
+      var applyLimit = function(){
+        var limit = Number(limitSel.value || 0);
+        document.querySelectorAll('#playerDetails .pdPane table tbody').forEach(function(tbody){
+          Array.prototype.forEach.call(tbody.querySelectorAll('tr'), function(row, idx){
+            row.style.display = (!limit || idx < limit) ? '' : 'none';
+          });
+        });
+      };
+      limitSel.dataset.bound = '1';
+      limitSel.addEventListener('change', applyLimit);
+      applyLimit();
+    }
   }
 
   function toastSafe(icon, msg){
