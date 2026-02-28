@@ -4115,6 +4115,7 @@ body:before{display:block !important;}
 .pCtrl svg{width:18px;height:18px}
 
 
+body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .playerWrap{overflow:hidden}
 body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .playerDetails{
   padding:12px 14px 14px;
   background:var(--railCoverSolid, #0b0b12);
@@ -4132,7 +4133,7 @@ body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .playerDetails .pdCard:f
   margin-bottom:6px;
 }
 body.ballzTheatre .gameOverlay{padding:0}
-body.ballzTheatre .gameShell{width:100%;height:100%}
+body.ballzTheatre .gameShell{width:min(100%, var(--ballzTheatreWidth, calc(100vw - 580px)), 1360px);height:100%}
 body.ballzTheatre .playerDetails{display:none}
 body.ballzTheatre .playerGameStage{flex:1 1 auto;height:auto;min-height:0}
 
