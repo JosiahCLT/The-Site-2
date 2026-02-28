@@ -3961,7 +3961,10 @@ body:before{display:block !important;}
   padding:var(--ballzInset, 34px);
   align-items:center;
   justify-content:center;
-  background:linear-gradient(180deg, var(--bg0), var(--bg1));
+  background:
+radial-gradient(900px 560px at 12% 2%, color-mix(in srgb, var(--accent) 22%, transparent), transparent 55%),
+radial-gradient(900px 560px at 92% 10%, color-mix(in srgb, var(--accent2) 18%, transparent), transparent 55%),
+linear-gradient(180deg, var(--bg0), var(--bg1));
   pointer-events:auto;
   box-sizing:border-box;
 }
@@ -4059,6 +4062,12 @@ body:before{display:block !important;}
   color:#fff;
   font-weight:1000;
   padding:0 36px 0 12px;
+  -webkit-appearance:none;
+  appearance:none;
+}
+.pdBetSelect option{
+  background:#193247;
+  color:#eaf2ff;
 }
 .pdCollapsed .pdBody{display:none}
 .pBarLeft, .pBarRight{display:flex; align-items:center; gap:8px;}
@@ -14386,11 +14395,10 @@ document.getElementById('devResetClaimables')?.addEventListener('click', (e)=>{
             </div>
             <div class="pdBetRight">
               <select class="pdBetSelect" id="pdBetLimit" aria-label="View more bets">
-                <option value="5" selected>View 5 Bets</option>
-                <option value="10">View 10 Bets</option>
-                <option value="20">View 20 Bets</option>
-                <option value="40">View 40 Bets</option>
-                <option value="0">View All Bets</option>
+                <option value="10" selected>10</option>
+                <option value="20">20</option>
+                <option value="30">30</option>
+                <option value="40">40</option>
               </select>
             </div>
           </div>
