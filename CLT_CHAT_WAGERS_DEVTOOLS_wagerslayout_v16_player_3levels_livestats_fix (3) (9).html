@@ -4115,17 +4115,26 @@ body:before{display:block !important;}
 .pCtrl svg{width:18px;height:18px}
 
 
+body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .playerDetails{
+  padding:12px 14px 14px;
+  background:var(--railCoverSolid, #0b0b12);
+}
+body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .playerDetails .pdCard:not(:first-child){
+  display:none;
+}
 body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .playerDetails .pdCard:first-child{
   width:100%;
-  padding:12px 14px;
+  padding:10px 12px;
+  margin:0;
 }
 body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .playerDetails .pdCard:first-child .pdHead{
-  min-height:34px;
-  margin-bottom:8px;
+  min-height:30px;
+  margin-bottom:6px;
 }
 body.ballzTheatre .gameOverlay{padding:0}
-body.ballzTheatre .gameShell{height:100%}
+body.ballzTheatre .gameShell{width:100%;height:100%}
 body.ballzTheatre .playerDetails{display:none}
+body.ballzTheatre .playerGameStage{flex:1 1 auto;height:auto;min-height:0}
 
 body.ballzFullscreen .gameOverlay{padding:0}
 body.ballzFullscreen .gameShell{border-radius:0;border:0;box-shadow:none}
