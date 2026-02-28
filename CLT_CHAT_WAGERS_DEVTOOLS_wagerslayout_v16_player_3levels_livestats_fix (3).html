@@ -3961,7 +3961,10 @@ body:before{display:block !important;}
   padding:var(--ballzInset, 34px);
   align-items:center;
   justify-content:center;
-  background:transparent;
+  background:
+radial-gradient(900px 560px at 12% 2%, color-mix(in srgb, var(--accent) 20%, transparent), transparent 55%),
+radial-gradient(900px 560px at 92% 10%, color-mix(in srgb, var(--accent2) 16%, transparent), transparent 55%),
+linear-gradient(180deg, color-mix(in srgb, var(--bg0) 96%, #000 4%), color-mix(in srgb, var(--bg1) 96%, #000 4%));
   pointer-events:auto;
   box-sizing:border-box;
 }
@@ -4021,7 +4024,9 @@ body:before{display:block !important;}
 .pdHead{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
 .pdTitle{font-size:28px;font-weight:1200;letter-spacing:.3px}
 .pdSub{font-size:12px;color:rgba(255,255,255,.66);font-weight:900}
-.pdToggle{border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:rgba(255,255,255,.92);border-radius:12px;padding:8px 12px;font-weight:1000;cursor:pointer}
+.pdToggle{width:34px;height:34px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.04);color:rgba(255,255,255,.92);border-radius:999px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;margin-left:auto}
+.pdToggle svg{width:16px;height:16px;transition:transform .18s ease}
+.pdCollapsed .pdToggle svg{transform:rotate(-90deg)}
 .pdTabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
 .pdTab{border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:rgba(255,255,255,.85);border-radius:999px;padding:10px 14px;font-weight:1000;cursor:pointer}
 .pdTab.active{background:rgba(140,200,255,.22);color:#fff;border-color:rgba(140,200,255,.5)}
@@ -4032,11 +4037,22 @@ body:before{display:block !important;}
 .pdTable th{font-size:12px;color:rgba(255,255,255,.68);text-transform:uppercase;letter-spacing:.5px}
 .pdTable td{font-weight:900;color:rgba(255,255,255,.88)}
 .pdText{color:rgba(255,255,255,.78);line-height:1.5}
-.pdRecommend{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px}
-.pdGame{border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:10px;background:rgba(255,255,255,.04)}
-.pdGameArt{height:120px;border-radius:10px;background:linear-gradient(135deg, rgba(80,170,255,.45), rgba(166,93,255,.42));margin-bottom:8px}
-.pdGameName{font-size:13px;font-weight:1000}
-.pdGameMeta{font-size:11px;color:rgba(255,255,255,.62);margin-top:4px}
+.pdRecommend{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:12px}
+.pdGame{border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:8px;background:rgba(255,255,255,.03)}
+.pdGameArt{height:154px;border-radius:10px;margin-bottom:8px;background-size:cover;background-position:center;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}
+.pdGameName{font-size:13px;font-weight:1000;line-height:1.2}
+.pdGameMeta{font-size:11px;color:rgba(255,255,255,.62);margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pdGameArt.g1{background-image:linear-gradient(145deg,#5db2ff,#7857ff)}
+.pdGameArt.g2{background-image:linear-gradient(145deg,#66e0b0,#1f8eff)}
+.pdGameArt.g3{background-image:linear-gradient(145deg,#ffa45f,#ff4f77)}
+.pdGameArt.g4{background-image:linear-gradient(145deg,#ffc867,#ff7d45)}
+.pdGameArt.g5{background-image:linear-gradient(145deg,#b781ff,#4f89ff)}
+.pdGameArt.g6{background-image:linear-gradient(145deg,#6de7ff,#4c6bff)}
+.pdTableWrap{overflow:auto}
+.pdBetHead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+.pdBetRight{display:flex;align-items:center;gap:8px}
+.pdMiniBtn{height:36px;min-width:36px;padding:0 12px;border-radius:10px;border:1px solid rgba(255,255,255,.14);background:rgba(111,161,190,.35);color:#fff;font-weight:1000;cursor:pointer}
+.pdMiniBtn.icon{padding:0;width:36px}
 .pdCollapsed .pdBody{display:none}
 .pBarLeft, .pBarRight{display:flex; align-items:center; gap:8px;}
 .pBarTitle{
@@ -14297,13 +14313,15 @@ document.getElementById('devResetClaimables')?.addEventListener('click', (e)=>{
       </div>
 
       <div class="playerDetails" id="playerDetails">
-        <section class="pdCard">
+        <section class="pdCard pdCollapsed">
           <div class="pdHead">
             <div>
               <div class="pdTitle">Ballz</div>
-              <div class="pdSub">Placeholder game info • house edge placeholder • quests placeholder</div>
+              <div class="pdSub">Arcade Original • House Edge 2.5% • Medium Volatility</div>
             </div>
-            <button class="pdToggle" id="pdInfoToggle" type="button" aria-expanded="true">Collapse</button>
+            <button class="pdToggle" id="pdInfoToggle" type="button" aria-label="Expand details" aria-expanded="false" title="Expand details">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m8 10 4 4 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
           </div>
           <div class="pdBody" id="pdInfoBody">
             <div class="pdTabs" id="pdInfoTabs">
@@ -14316,9 +14334,9 @@ document.getElementById('devResetClaimables')?.addEventListener('click', (e)=>{
               <table class="pdTable">
                 <thead><tr><th>Rank</th><th>User</th><th>Date</th><th>Amount</th><th>Multiplier</th><th>Winnings</th></tr></thead>
                 <tbody>
-                  <tr><td>#1</td><td>PlaceholderUser1</td><td>Placeholder Date</td><td>$250,000.00</td><td>30×</td><td>$7,500,000.00</td></tr>
-                  <tr><td>#2</td><td>PlaceholderUser2</td><td>Placeholder Date</td><td>$120,000.00</td><td>18×</td><td>$2,160,000.00</td></tr>
-                  <tr><td>#3</td><td>PlaceholderUser3</td><td>Placeholder Date</td><td>$75,000.00</td><td>14×</td><td>$1,050,000.00</td></tr>
+                  <tr><td>#1</td><td>Minz</td><td>Feb 20, 2026</td><td>$250,000.00</td><td>30×</td><td>$7,500,000.00</td></tr>
+                  <tr><td>#2</td><td>dbzima</td><td>Feb 19, 2026</td><td>$500,000.00</td><td>13×</td><td>$6,500,000.00</td></tr>
+                  <tr><td>#3</td><td>3hunna152</td><td>Feb 16, 2026</td><td>$250,000.00</td><td>21×</td><td>$5,250,000.00</td></tr>
                 </tbody>
               </table>
             </div>
@@ -14326,17 +14344,17 @@ document.getElementById('devResetClaimables')?.addEventListener('click', (e)=>{
               <table class="pdTable">
                 <thead><tr><th>Rank</th><th>User</th><th>Date</th><th>Bet</th><th>Multiplier</th><th>Payout</th></tr></thead>
                 <tbody>
-                  <tr><td>#1</td><td>PlaceholderUserA</td><td>Placeholder Date</td><td>$4.00</td><td>1150×</td><td>$4,600.00</td></tr>
-                  <tr><td>#2</td><td>PlaceholderUserB</td><td>Placeholder Date</td><td>$1.00</td><td>980×</td><td>$980.00</td></tr>
-                  <tr><td>#3</td><td>PlaceholderUserC</td><td>Placeholder Date</td><td>$3.50</td><td>720×</td><td>$2,520.00</td></tr>
+                  <tr><td>#1</td><td>LuckyShot77</td><td>Feb 21, 2026</td><td>$2.00</td><td>1250×</td><td>$2,500.00</td></tr>
+                  <tr><td>#2</td><td>MoonRun</td><td>Feb 21, 2026</td><td>$5.00</td><td>940×</td><td>$4,700.00</td></tr>
+                  <tr><td>#3</td><td>ZenArcade</td><td>Feb 20, 2026</td><td>$3.00</td><td>810×</td><td>$2,430.00</td></tr>
                 </tbody>
               </table>
             </div>
             <div class="pdPane" data-pane="challenges">
-              <div class="pdText">Quest placeholders: daily mission placeholder, weekly streak placeholder, and special event placeholder.</div>
+              <div class="pdText">Daily Quest: Win 3 rounds in any Arcade title. Weekly Quest: Reach a 25× multiplier in Ballz. Event Quest: Finish Top 20 by total payout this weekend.</div>
             </div>
             <div class="pdPane" data-pane="description">
-              <div class="pdText">Game description placeholder. House edge placeholder. Volatility placeholder. Max win placeholder.</div>
+              <div class="pdText">Ballz is a fast-paced skill arcade where timing and shot angle decide your multiplier path. House Edge: 2.5% • Volatility: Medium • Max Multiplier: 1250×</div>
             </div>
           </div>
         </section>
@@ -14344,47 +14362,51 @@ document.getElementById('devResetClaimables')?.addEventListener('click', (e)=>{
         <section class="pdCard">
           <div class="pdHead"><div class="pdTitle" style="font-size:22px">Recommended</div></div>
           <div class="pdRecommend">
-            <div class="pdGame"><div class="pdGameArt"></div><div class="pdGameName">Recommended Game 1</div><div class="pdGameMeta">Placeholder Provider</div></div>
-            <div class="pdGame"><div class="pdGameArt"></div><div class="pdGameName">Recommended Game 2</div><div class="pdGameMeta">Placeholder Provider</div></div>
-            <div class="pdGame"><div class="pdGameArt"></div><div class="pdGameName">Recommended Game 3</div><div class="pdGameMeta">Placeholder Provider</div></div>
-            <div class="pdGame"><div class="pdGameArt"></div><div class="pdGameName">Recommended Game 4</div><div class="pdGameMeta">Placeholder Provider</div></div>
-            <div class="pdGame"><div class="pdGameArt"></div><div class="pdGameName">Recommended Game 5</div><div class="pdGameMeta">Placeholder Provider</div></div>
-            <div class="pdGame"><div class="pdGameArt"></div><div class="pdGameName">Recommended Game 6</div><div class="pdGameMeta">Placeholder Provider</div></div>
+            <div class="pdGame"><div class="pdGameArt g1"></div><div class="pdGameName">Superstar Sevens</div><div class="pdGameMeta">Hacksaw Gaming</div></div>
+            <div class="pdGame"><div class="pdGameArt g2"></div><div class="pdGameName">Knight Fall</div><div class="pdGameMeta">Paperclip Gaming</div></div>
+            <div class="pdGame"><div class="pdGameArt g3"></div><div class="pdGameName">Lion Stacks</div><div class="pdGameMeta">Twist Gaming</div></div>
+            <div class="pdGame"><div class="pdGameArt g4"></div><div class="pdGameName">Crystal Peak</div><div class="pdGameMeta">Titan Gaming</div></div>
+            <div class="pdGame"><div class="pdGameArt g5"></div><div class="pdGameName">Yummy Mummies</div><div class="pdGameMeta">Knucklehead Syndicate</div></div>
+            <div class="pdGame"><div class="pdGameArt g6"></div><div class="pdGameName">Le Fisherman</div><div class="pdGameMeta">Hacksaw Gaming</div></div>
           </div>
         </section>
 
         <section class="pdCard">
-          <div class="pdTabs" id="pdBetTabs">
-            <button class="pdTab active" data-pane="mygames" type="button">My Games</button>
-            <button class="pdTab" data-pane="allgames" type="button">All Games</button>
-            <button class="pdTab" data-pane="highrollers" type="button">High Rollers</button>
+          <div class="pdBetHead">
+            <div class="pdTabs" id="pdBetTabs" style="margin-bottom:0">
+              <button class="pdTab active" data-pane="mygames" type="button">My Games</button>
+              <button class="pdTab" data-pane="allgames" type="button">All Games</button>
+              <button class="pdTab" data-pane="highrollers" type="button">High Rollers</button>
+            </div>
+            <div class="pdBetRight">
+              <button class="pdMiniBtn icon" type="button" title="Hide muted"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 9h3l4-3v12l-4-3H5z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="m15 9 4 6M19 9l-4 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
+              <button class="pdMiniBtn" type="button">10 ▾</button>
+              <button class="pdMiniBtn" type="button">View More</button>
+            </div>
           </div>
           <div class="pdPane active" data-pane="mygames">
-            <table class="pdTable">
+            <div class="pdTableWrap"><table class="pdTable">
               <thead><tr><th>Game</th><th>Time</th><th>Amount</th><th>Multiplier</th><th>Result</th></tr></thead>
               <tbody>
-                <tr><td>Ballz</td><td>9:57 AM</td><td>$25.00</td><td>3.5×</td><td>$87.50</td></tr>
-                <tr><td>Ballz</td><td>9:41 AM</td><td>$10.00</td><td>0.8×</td><td>-$2.00</td></tr>
+                <tr><td>Ballz</td><td>9:57 AM</td><td>$25.00</td><td>3.5×</td><td>$87.50</td></tr><tr><td>Ballz</td><td>9:53 AM</td><td>$10.00</td><td>1.2×</td><td>$12.00</td></tr><tr><td>Le Bandit</td><td>9:48 AM</td><td>$18.00</td><td>0.0×</td><td>-$18.00</td></tr><tr><td>Plinko</td><td>9:41 AM</td><td>$6.00</td><td>7.0×</td><td>$42.00</td></tr><tr><td>Ballz</td><td>9:36 AM</td><td>$12.00</td><td>0.8×</td><td>-$2.40</td></tr><tr><td>Dice</td><td>9:31 AM</td><td>$35.00</td><td>1.1×</td><td>$38.50</td></tr><tr><td>Ballz</td><td>9:24 AM</td><td>$9.00</td><td>5.5×</td><td>$49.50</td></tr><tr><td>Le Pharaoh</td><td>9:17 AM</td><td>$20.00</td><td>0.0×</td><td>-$20.00</td></tr>
               </tbody>
-            </table>
+            </table></div>
           </div>
           <div class="pdPane" data-pane="allgames">
-            <table class="pdTable">
+            <div class="pdTableWrap"><table class="pdTable">
               <thead><tr><th>User</th><th>Game</th><th>Time</th><th>Amount</th><th>Result</th></tr></thead>
               <tbody>
-                <tr><td>SiteUser001</td><td>Le Fisherman</td><td>9:59 AM</td><td>$100.00</td><td>$420.00</td></tr>
-                <tr><td>SiteUser002</td><td>Ballz</td><td>9:58 AM</td><td>$12.00</td><td>-$12.00</td></tr>
+                <tr><td>Neo</td><td>Le Fisherman</td><td>9:59 AM</td><td>$100.00</td><td>$420.00</td></tr><tr><td>Luna</td><td>Ballz</td><td>9:58 AM</td><td>$12.00</td><td>-$12.00</td></tr><tr><td>Rio</td><td>Plinko</td><td>9:57 AM</td><td>$5.00</td><td>$80.00</td></tr><tr><td>Dexy</td><td>Roulette</td><td>9:56 AM</td><td>$250.00</td><td>-$250.00</td></tr><tr><td>Swag77</td><td>Crash</td><td>9:54 AM</td><td>$45.00</td><td>$122.40</td></tr><tr><td>Klintina</td><td>Blackjack</td><td>9:53 AM</td><td>$300.00</td><td>$600.00</td></tr><tr><td>Mina</td><td>Le Bandit</td><td>9:51 AM</td><td>$20.00</td><td>-$20.00</td></tr><tr><td>Ivy</td><td>Dragon Tower</td><td>9:49 AM</td><td>$16.00</td><td>$32.00</td></tr>
               </tbody>
-            </table>
+            </table></div>
           </div>
           <div class="pdPane" data-pane="highrollers">
-            <table class="pdTable">
+            <div class="pdTableWrap"><table class="pdTable">
               <thead><tr><th>User</th><th>Game</th><th>Time</th><th>Amount</th><th>Result</th></tr></thead>
               <tbody>
-                <tr><td>WhaleAlpha</td><td>Plinko</td><td>9:54 AM</td><td>$15,000.00</td><td>$45,000.00</td></tr>
-                <tr><td>WhaleBeta</td><td>Blackjack</td><td>9:52 AM</td><td>$8,000.00</td><td>-$8,000.00</td></tr>
+                <tr><td>WhaleAlpha</td><td>Plinko</td><td>9:54 AM</td><td>$15,000.00</td><td>$45,000.00</td></tr><tr><td>WhaleBeta</td><td>Blackjack</td><td>9:52 AM</td><td>$8,000.00</td><td>-$8,000.00</td></tr><tr><td>HighCardz</td><td>Roulette</td><td>9:49 AM</td><td>$12,500.00</td><td>$25,000.00</td></tr><tr><td>CLTLegend</td><td>Crash</td><td>9:47 AM</td><td>$9,000.00</td><td>-$9,000.00</td></tr><tr><td>AllInAce</td><td>Baccarat</td><td>9:45 AM</td><td>$20,000.00</td><td>$20,000.00</td></tr><tr><td>TitanRoller</td><td>Slots</td><td>9:43 AM</td><td>$7,500.00</td><td>$30,000.00</td></tr><tr><td>NovaBet</td><td>Le Fisherman</td><td>9:39 AM</td><td>$6,800.00</td><td>-$6,800.00</td></tr><tr><td>GoldStack</td><td>Dice</td><td>9:35 AM</td><td>$11,200.00</td><td>$15,680.00</td></tr>
               </tbody>
-            </table>
+            </table></div>
           </div>
         </section>
       </div>
@@ -22635,11 +22657,16 @@ body.ballzOpen .gameOverlay{ top: var(--ballzTop) !important; left: var(--ballzL
     var btn = byId('pdInfoToggle');
     var card = btn ? btn.closest('.pdCard') : null;
     if(!btn || !card || btn.dataset.bound === '1') return;
+    var sync = function(collapsed){
+      btn.setAttribute('aria-expanded', String(!collapsed));
+      btn.setAttribute('aria-label', collapsed ? 'Expand details' : 'Collapse details');
+      btn.setAttribute('title', collapsed ? 'Expand details' : 'Collapse details');
+    };
+    sync(card.classList.contains('pdCollapsed'));
     btn.dataset.bound = '1';
     btn.addEventListener('click', function(){
       var collapsed = card.classList.toggle('pdCollapsed');
-      btn.textContent = collapsed ? 'Expand' : 'Collapse';
-      btn.setAttribute('aria-expanded', String(!collapsed));
+      sync(collapsed);
     });
   }
 
