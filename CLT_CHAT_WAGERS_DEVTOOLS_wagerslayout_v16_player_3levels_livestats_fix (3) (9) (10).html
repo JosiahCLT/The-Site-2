@@ -4120,6 +4120,9 @@ body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .playerDetails{
   padding:12px 14px 14px;
   background:var(--railCoverSolid, #0b0b12);
 }
+body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .playerGameStage{
+  height:max(360px, calc(100vh - var(--ballzTop) - (var(--ballzInset) * 2) - 44px));
+}
 body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .playerDetails .pdCard{display:block}
 body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .playerDetails .pdCard:first-child{
   width:100%;
