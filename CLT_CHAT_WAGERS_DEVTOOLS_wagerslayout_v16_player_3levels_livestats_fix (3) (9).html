@@ -3961,7 +3961,10 @@ body:before{display:block !important;}
   padding:var(--ballzInset, 34px);
   align-items:center;
   justify-content:center;
-  background:transparent;
+  background:
+radial-gradient(900px 560px at 12% 2%, color-mix(in srgb, var(--accent) 22%, transparent), transparent 55%),
+radial-gradient(900px 560px at 92% 10%, color-mix(in srgb, var(--accent2) 18%, transparent), transparent 55%),
+linear-gradient(180deg, var(--bg0), var(--bg1));
   pointer-events:auto;
   box-sizing:border-box;
 }
@@ -3992,8 +3995,8 @@ body:before{display:block !important;}
 .playerGameStage{
   position:relative;
   width:100%;
-  flex:1 1 auto;
-  min-height:clamp(420px, 56vh, 760px);
+  flex:none;
+  height:clamp(420px, 62vh, 760px);
   border-bottom:1px solid rgba(255,255,255,.06);
 }
 .gameFrame{
@@ -4114,17 +4117,15 @@ body:before{display:block !important;}
 .pCtrl.active{background:rgba(255,255,255,.08); border-color:rgba(255,255,255,.20); color:rgba(255,255,255,.95);}
 .pCtrl svg{width:18px;height:18px}
 
-body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .playerDetails{
-  padding:12px 16px 14px;
-}
-body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .playerDetails .pdCard:not(:first-child){
-  display:none;
-}
-body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .playerDetails .pdCard:first-child{
-  width:min(100%, 880px);
-  margin:0 auto;
-}
 
+body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .playerDetails .pdCard:first-child{
+  width:100%;
+  padding:12px 14px;
+}
+body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .playerDetails .pdCard:first-child .pdHead{
+  min-height:34px;
+  margin-bottom:8px;
+}
 body.ballzTheatre .gameOverlay{padding:0}
 body.ballzTheatre .gameShell{height:100%}
 body.ballzTheatre .playerDetails{display:none}
