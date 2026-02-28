@@ -4116,11 +4116,13 @@ body.ballzOpen .gameOverlay{align-items:stretch;justify-content:flex-start}
 .pCtrl svg{width:18px;height:18px}
 
 
+body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .playerWrap{overflow:hidden}
 body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .playerDetails{
   padding:12px 14px 14px;
   background:var(--railCoverSolid, #0b0b12);
 }
-body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .playerDetails .pdCard{display:block}
+body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .playerDetails .pdCard{display:none}
+body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .playerDetails .pdCard:first-child{display:block}
 body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .playerDetails .pdCard:first-child{
   width:100%;
   padding:10px 12px;
@@ -22672,6 +22674,8 @@ body.timerLeft .topbar .timerPill .timerBar{
 }
 /* prevent the main scroll from scrolling while player is open */
 body.ballzOpen #scroll{ overflow:hidden !important; }
+body.ballzOpen #scroll > *{visibility:hidden;pointer-events:none;}
+body.ballzOpen .gameOverlay{background:var(--railCoverSolid, #0b0b12);}
 
 /* Keep overlay in sync with measured sidebar/chat widths */
 body.ballzOpen .gameOverlay{ top: var(--ballzTop) !important; left: var(--ballzLeft) !important; right: var(--ballzRight) !important; bottom:0 !important; }
