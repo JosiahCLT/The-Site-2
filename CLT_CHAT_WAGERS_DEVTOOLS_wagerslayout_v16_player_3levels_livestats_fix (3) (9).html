@@ -3961,15 +3961,18 @@ body:before{display:block !important;}
   padding:var(--ballzInset, 34px);
   align-items:center;
   justify-content:center;
-  background:var(--bg0);
+  background:
+radial-gradient(900px 560px at 12% 2%, color-mix(in srgb, var(--accent) 22%, transparent), transparent 55%),
+radial-gradient(900px 560px at 92% 10%, color-mix(in srgb, var(--accent2) 18%, transparent), transparent 55%),
+linear-gradient(180deg, var(--bg0), var(--bg1));
   pointer-events:auto;
   box-sizing:border-box;
 }
 .gameOverlay.show{display:flex}
 
 .gameShell{
-  width:min(100%, 1360px);
-  height:min(100%, 860px);
+  width:min(100%, var(--ballzTheatreWidth, calc(100vw - 580px)), 1360px);
+  height:100%;
   border-radius:0px;
   overflow:hidden;
   border:1px solid rgba(255,255,255,.10);
@@ -3986,14 +3989,14 @@ body:before{display:block !important;}
   min-height:0;
   display:flex;
   flex-direction:column;
-  overflow:auto;
+  overflow:hidden;
   background:transparent;
 }
 .playerGameStage{
   position:relative;
   width:100%;
   flex:1 1 auto;
-  min-height:clamp(420px, 70vh, 760px);
+  min-height:clamp(420px, 56vh, 760px);
   border-bottom:1px solid rgba(255,255,255,.06);
 }
 .gameFrame{
@@ -4114,8 +4117,9 @@ body:before{display:block !important;}
 .pCtrl.active{background:rgba(255,255,255,.08); border-color:rgba(255,255,255,.20); color:rgba(255,255,255,.95);}
 .pCtrl svg{width:18px;height:18px}
 
-body.ballzTheatre .gameOverlay{padding:16px}
-body.ballzTheatre .gameShell{width:100%;height:100%}
+body.ballzTheatre .gameOverlay{padding:0}
+body.ballzTheatre .gameShell{height:100%}
+body.ballzTheatre .playerDetails{display:none}
 
 body.ballzFullscreen .gameOverlay{padding:0}
 body.ballzFullscreen .gameShell{border-radius:0;border:0;box-shadow:none}
@@ -22647,14 +22651,17 @@ body.timerLeft .topbar .timerPill .timerBar{
   --ballzLeft: 260px;
   --ballzRight: 320px;
   --ballzTop: 62px;
-  --ballzInset: 72px;
+  --ballzInset: 16px;
+  --ballzBaseLeft: 260px;
+  --ballzBaseRight: 320px;
+  --ballzTheatreWidth: calc(100vw - var(--ballzBaseLeft) - var(--ballzBaseRight));
 }
 /* prevent the main scroll from scrolling while player is open */
 body.ballzOpen #scroll{ overflow:hidden !important; }
 
 /* Keep overlay in sync with measured sidebar/chat widths */
 body.ballzOpen .gameOverlay{ top: var(--ballzTop) !important; left: var(--ballzLeft) !important; right: var(--ballzRight) !important; bottom:0 !important; }
-body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .gameOverlay{ padding:0 !important; }
+body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .gameOverlay{ padding:var(--ballzInset) var(--ballzInset) 0 !important; }
 
 /* Theatre = tighter spacing with the same shell visible */
 </style>
@@ -23042,10 +23049,35 @@ body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .gameOverlay{ padding:0 
     }
   }, false);
 
-  // keep sizing synced for collapses
+  // keep sizing synced for collapses / panel width changes
   window.addEventListener('resize', function(){
     if(document.body.classList.contains('ballzOpen')) measure();
   });
+
+  var collapseLeftBtn = byId('collapseLeftBtn');
+  var collapseRightBtn = byId('collapseRightBtn');
+  if(collapseLeftBtn){
+    collapseLeftBtn.addEventListener('click', function(){
+      if(document.body.classList.contains('ballzOpen')) requestAnimationFrame(measure);
+    });
+  }
+  if(collapseRightBtn){
+    collapseRightBtn.addEventListener('click', function(){
+      if(document.body.classList.contains('ballzOpen')) requestAnimationFrame(measure);
+    });
+  }
+
+  try{
+    var ro = new ResizeObserver(function(){
+      if(document.body.classList.contains('ballzOpen')) measure();
+    });
+    var topBar = document.querySelector('.top');
+    if(topBar) ro.observe(topBar);
+    var leftBar = byId('leftSidebar');
+    if(leftBar) ro.observe(leftBar);
+    var rightBar = byId('todayPanel');
+    if(rightBar) ro.observe(rightBar);
+  }catch(e){}
 
   window.addEventListener('popstate', function(){
     if(window.location.hash === '#game/ballz') openBallz();
