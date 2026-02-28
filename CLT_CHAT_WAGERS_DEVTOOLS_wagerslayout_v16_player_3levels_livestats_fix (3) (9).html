@@ -22674,8 +22674,7 @@ body.timerLeft .topbar .timerPill .timerBar{
 }
 /* prevent the main scroll from scrolling while player is open */
 body.ballzOpen #scroll{ overflow:hidden !important; }
-body.ballzOpen #scroll > *{visibility:hidden;pointer-events:none;}
-body.ballzOpen .gameOverlay{background:var(--railCoverSolid, #0b0b12);}
+body.ballzOpen .gameOverlay{background:var(--railCoverSolid, #0b0b12);box-shadow:inset 0 1px 0 rgba(255,255,255,.05);}
 
 /* Keep overlay in sync with measured sidebar/chat widths */
 body.ballzOpen .gameOverlay{ top: var(--ballzTop) !important; left: var(--ballzLeft) !important; right: var(--ballzRight) !important; bottom:0 !important; }
