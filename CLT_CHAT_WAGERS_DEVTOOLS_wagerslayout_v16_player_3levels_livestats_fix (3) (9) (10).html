@@ -2794,7 +2794,16 @@ font-size:11px !important;
 .miniChip{flex-basis:100%}
 }
 /* Right-rail: make chat fill the whole panel */
-.todayBody[data-page="chat"]{overflow:hidden}
+.todayBody[data-page="chat"]{overflow:hidden;padding:0;display:flex}
+.todayBody[data-page="chat"] .chatWrap{flex:1;min-height:0;gap:0}
+.todayBody[data-page="chat"] .chatList{
+  border:0;
+  border-radius:0;
+  background:transparent;
+  box-shadow:none;
+  padding:10px 14px;
+}
+.todayBody[data-page="chat"] .chatComposer{padding:0 14px 14px}
 /* Make right-rail layout stretch so pages can fill the full height */
 #todayPanel{display:flex;flex-direction:column}
 /* VIP modal */
@@ -4007,29 +4016,15 @@ body.ballzOpen .gameOverlay{align-items:stretch;justify-content:flex-start}
   background:#060912;
 }
 .playerBottomBar{
-  height:44px;
+  height:46px;
   display:flex;
   align-items:center;
   justify-content:space-between;
   gap:10px;
-  padding:0 10px;
-  border-top:1px solid rgba(255,255,255,.08);
-  background:var(--railCoverSolid, #0b0b12);
-  position:relative;
+  padding:0 12px;
+  border-top:1px solid rgba(255,255,255,.10);
+  background:rgba(4,10,24,.78);
 }
-.playerBottomBar::before{
-  content:"";
-  position:absolute;
-  left:8px;
-  right:8px;
-  top:4px;
-  bottom:4px;
-  border-radius:12px;
-  border:1px solid rgba(255,255,255,.10);
-  background:rgba(4,10,24,.72);
-  pointer-events:none;
-}
-.playerBottomBar > *{position:relative;z-index:1}
 .playerDetails{
   padding:18px;
   background:var(--railCoverSolid, #0b0b12);
@@ -4136,7 +4131,7 @@ body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .playerDetails{
   background:var(--railCoverSolid, #0b0b12);
 }
 body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .playerGameStage{
-  height:max(360px, calc(100vh - var(--ballzTop) - (var(--ballzInset) * 1.5) - 44px));
+  height:max(340px, calc(100vh - var(--ballzTop) - (var(--ballzInset) * 2) - 46px));
 }
 body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .playerDetails .pdCard{display:block}
 body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .playerDetails .pdCard:first-child{
@@ -22802,6 +22797,14 @@ body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .gameOverlay{ padding:va
       var lsW = ls ? Math.round(ls.getBoundingClientRect().width) : 0;
       var rsW = rs ? Math.round(rs.getBoundingClientRect().width) : 0;
       var topH = top ? Math.round(top.getBoundingClientRect().height) : 0;
+      var app = byId('app');
+      var leftCollapsed = !!(app && app.classList.contains('left-collapsed'));
+      var rightCollapsed = !!(app && app.classList.contains('right-collapsed'));
+      if(leftCollapsed !== rightCollapsed){
+        var sharedPad = Math.max(lsW, rsW);
+        lsW = sharedPad;
+        rsW = sharedPad;
+      }
       document.documentElement.style.setProperty('--ballzLeft', lsW + 'px');
       document.documentElement.style.setProperty('--ballzRight', rsW + 'px');
       document.documentElement.style.setProperty('--ballzTop', topH + 'px');
