@@ -4116,15 +4116,11 @@ body.ballzOpen .gameOverlay{align-items:stretch;justify-content:flex-start}
 .pCtrl svg{width:18px;height:18px}
 
 
-body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .playerWrap{overflow:hidden}
-body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .playerGameStage{flex:1 1 auto;height:auto;min-height:0}
 body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .playerDetails{
   padding:12px 14px 14px;
   background:var(--railCoverSolid, #0b0b12);
 }
-body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .playerDetails .pdCard:not(:first-child){
-  display:none;
-}
+body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .playerDetails .pdCard{display:block}
 body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .playerDetails .pdCard:first-child{
   width:100%;
   padding:10px 12px;
