@@ -3961,10 +3961,7 @@ body:before{display:block !important;}
   padding:var(--ballzInset, 34px);
   align-items:center;
   justify-content:center;
-  background:
-radial-gradient(900px 560px at 12% 2%, color-mix(in srgb, var(--accent) 22%, transparent), transparent 55%),
-radial-gradient(900px 560px at 92% 10%, color-mix(in srgb, var(--accent2) 18%, transparent), transparent 55%),
-linear-gradient(180deg, var(--bg0), var(--bg1));
+  background:var(--bg0);
   pointer-events:auto;
   box-sizing:border-box;
 }
@@ -3987,14 +3984,16 @@ linear-gradient(180deg, var(--bg0), var(--bg1));
   position:relative;
   flex:1;
   min-height:0;
-  display:block;
+  display:flex;
+  flex-direction:column;
   overflow:auto;
   background:transparent;
 }
 .playerGameStage{
   position:relative;
   width:100%;
-  height:clamp(420px, 70vh, 760px);
+  flex:1 1 auto;
+  min-height:clamp(420px, 70vh, 760px);
   border-bottom:1px solid rgba(255,255,255,.06);
 }
 .gameFrame{
@@ -4083,6 +4082,9 @@ linear-gradient(180deg, var(--bg0), var(--bg1));
   color:#eaf2ff;
 }
 .pdCollapsed .pdBody{display:none}
+.playerDetails .pdCard:first-child .pdHead{align-items:center;min-height:44px}
+.playerDetails .pdCard:first-child .pdTitle{font-size:24px;line-height:1}
+.playerDetails .pdCard:first-child .pdToggle{align-self:center}
 .pBarLeft, .pBarRight{display:flex; align-items:center; gap:8px;}
 .pBarTitle{
   display:flex;
@@ -11429,6 +11431,9 @@ wireGridControls();
 }
 
 function setPage(page){
+if(document.body.classList.contains('ballzOpen') && typeof window.closeBallz === 'function'){
+try{ window.closeBallz(); }catch(_){ }
+}
 LAST_PAGE = CURRENT_PAGE;
 CURRENT_PAGE = page;
 const isLobby = (page === 'Lobby');
@@ -22649,6 +22654,7 @@ body.ballzOpen #scroll{ overflow:hidden !important; }
 
 /* Keep overlay in sync with measured sidebar/chat widths */
 body.ballzOpen .gameOverlay{ top: var(--ballzTop) !important; left: var(--ballzLeft) !important; right: var(--ballzRight) !important; bottom:0 !important; }
+body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .gameOverlay{ padding:0 !important; }
 
 /* Theatre = tighter spacing with the same shell visible */
 </style>
@@ -22843,6 +22849,14 @@ body.ballzOpen .gameOverlay{ top: var(--ballzTop) !important; left: var(--ballzL
       closeBallz();
     }
   });
+
+  var leftSidebar = byId('leftSidebar');
+  if(leftSidebar){
+    leftSidebar.addEventListener('click', function(e){
+      var navHit = e.target && e.target.closest ? e.target.closest('.navBtn') : null;
+      if(navHit && document.body.classList.contains('ballzOpen')) closeBallz();
+    });
+  }
 
   // theatre mode (hide chat panel, widen player)
   function setTheatre(on){
