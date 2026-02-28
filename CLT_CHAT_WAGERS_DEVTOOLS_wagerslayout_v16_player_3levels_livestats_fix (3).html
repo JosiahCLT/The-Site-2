@@ -22702,6 +22702,26 @@ body.ballzOpen .gameOverlay{ top: var(--ballzTop) !important; left: var(--ballzL
     bindTabGroup('pdInfoTabs');
     bindTabGroup('pdBetTabs');
     bindInfoToggle();
+
+    var ensureRowsForLimit = function(){
+      document.querySelectorAll('#playerDetails .pdPane table tbody').forEach(function(tbody){
+        var rows = Array.prototype.slice.call(tbody.querySelectorAll('tr'));
+        if(!rows.length || rows.length >= 40) return;
+        var base = rows.slice();
+        var n = 0;
+        while(tbody.querySelectorAll('tr').length < 40){
+          var src = base[n % base.length];
+          var clone = src.cloneNode(true);
+          var tCell = clone.querySelector('td:nth-child(2)');
+          if(tCell){ tCell.textContent = tCell.textContent + ' • ' + String((n%9)+1); }
+          tbody.appendChild(clone);
+          n++;
+        }
+      });
+    };
+
+    ensureRowsForLimit();
+
     var limitSel = byId('pdBetLimit');
     if(limitSel && limitSel.dataset.bound !== '1'){
       var applyLimit = function(){
