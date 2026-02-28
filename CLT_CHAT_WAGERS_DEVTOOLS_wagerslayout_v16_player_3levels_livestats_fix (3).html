@@ -3962,8 +3962,9 @@ body:before{display:block !important;}
   align-items:center;
   justify-content:center;
   background:
-linear-gradient(90deg, rgba(92,28,36,.35) 0%, rgba(16,18,28,.85) 40%, rgba(45,26,46,.32) 100%),
-linear-gradient(180deg, color-mix(in srgb, var(--bg0) 88%, #101624 12%), color-mix(in srgb, var(--bg1) 92%, #05070d 8%));
+radial-gradient(900px 560px at 12% 2%, color-mix(in srgb, var(--accent) 22%, transparent), transparent 55%),
+radial-gradient(900px 560px at 92% 10%, color-mix(in srgb, var(--accent2) 18%, transparent), transparent 55%),
+linear-gradient(180deg, var(--bg0), var(--bg1));
   pointer-events:auto;
   box-sizing:border-box;
 }
@@ -4036,19 +4037,21 @@ linear-gradient(180deg, color-mix(in srgb, var(--bg0) 88%, #101624 12%), color-m
 .pdTable th{font-size:12px;color:rgba(255,255,255,.68);text-transform:uppercase;letter-spacing:.5px}
 .pdTable td{font-weight:900;color:rgba(255,255,255,.88)}
 .pdText{color:rgba(255,255,255,.78);line-height:1.5}
-.pdRecommend{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px}
-.pdGame{border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:8px;background:color-mix(in srgb, var(--panel2) 82%, #000 18%);box-shadow:0 12px 30px rgba(0,0,0,.25)}
-.pdGameArt{height:164px;border-radius:10px;margin-bottom:8px;background-size:cover;background-position:center;box-shadow:inset 0 0 0 1px rgba(255,255,255,.12)}
-.pdGameName{font-size:13px;font-weight:1100;line-height:1.2;color:#f2f6ff}
-.pdGameMeta{font-size:10px;color:rgba(255,255,255,.58);margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-transform:uppercase;letter-spacing:.3px}
+.pdRecommend{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:12px}
+.pdGame{border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:8px;background:rgba(12,16,28,.70);box-shadow:0 8px 24px rgba(0,0,0,.22)}
+.pdGameArt{height:160px;border-radius:10px;margin-bottom:8px;display:grid;place-items:center;position:relative;overflow:hidden;border:1px solid rgba(255,255,255,.10);background:radial-gradient(90% 80% at 50% 0%, rgba(167,64,70,.24), rgba(167,64,70,0) 55%),linear-gradient(180deg, rgba(22,28,44,.85), rgba(8,10,20,.9));}
+.pdGameArt::before{content:"";width:52px;height:52px;border-radius:18px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.04);box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
+.pdGameArt::after{position:absolute;font-size:20px;line-height:1}
+.pdGameName{font-size:13px;font-weight:1000;line-height:1.2;color:#e8edf7}
+.pdGameMeta{font-size:10px;color:rgba(255,255,255,.55);margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-transform:uppercase;letter-spacing:.3px}
 .pdGameLive{margin-top:7px;font-size:11px;color:rgba(255,255,255,.74);font-weight:900;display:flex;align-items:center;gap:6px}
 .pdGameLive::before{content:"";width:7px;height:7px;border-radius:999px;background:#34ff93;box-shadow:0 0 0 3px rgba(52,255,147,.14)}
-.pdGameArt.g1{background-image:linear-gradient(145deg,#5db2ff,#7857ff)}
-.pdGameArt.g2{background-image:linear-gradient(145deg,#66e0b0,#1f8eff)}
-.pdGameArt.g3{background-image:linear-gradient(145deg,#ffa45f,#ff4f77)}
-.pdGameArt.g4{background-image:linear-gradient(145deg,#ffc867,#ff7d45)}
-.pdGameArt.g5{background-image:linear-gradient(145deg,#b781ff,#4f89ff)}
-.pdGameArt.g6{background-image:linear-gradient(145deg,#6de7ff,#4c6bff)}
+.pdGameArt.g1::after{content:"⚡"}
+.pdGameArt.g2::after{content:"🌙"}
+.pdGameArt.g3::after{content:"🎲"}
+.pdGameArt.g4::after{content:"🔥"}
+.pdGameArt.g5::after{content:"🍀"}
+.pdGameArt.g6::after{content:"🎯"}
 .pdTableWrap{overflow:auto}
 .pdBetHead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
 .pdBetRight{display:flex;align-items:center;gap:8px}
