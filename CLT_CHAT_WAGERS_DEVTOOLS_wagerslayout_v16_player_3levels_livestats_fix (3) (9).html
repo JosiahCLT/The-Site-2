@@ -3961,10 +3961,7 @@ body:before{display:block !important;}
   padding:var(--ballzInset, 34px);
   align-items:center;
   justify-content:center;
-  background:
-radial-gradient(900px 560px at 12% 2%, color-mix(in srgb, var(--accent) 22%, transparent), transparent 55%),
-radial-gradient(900px 560px at 92% 10%, color-mix(in srgb, var(--accent2) 18%, transparent), transparent 55%),
-linear-gradient(180deg, var(--bg0), var(--bg1));
+  background:transparent;
   pointer-events:auto;
   box-sizing:border-box;
 }
@@ -3996,7 +3993,7 @@ linear-gradient(180deg, var(--bg0), var(--bg1));
   position:relative;
   width:100%;
   flex:none;
-  height:clamp(420px, 62vh, 760px);
+  height:clamp(380px, 56vh, 700px);
   border-bottom:1px solid rgba(255,255,255,.06);
 }
 .gameFrame{
@@ -4015,11 +4012,11 @@ linear-gradient(180deg, var(--bg0), var(--bg1));
   gap:10px;
   padding:0 10px;
   border-top:1px solid rgba(255,255,255,.08);
-  background:color-mix(in srgb, #0a0f1a 92%, #000 8%);
+  background:var(--railCoverSolid, #0b0b12);
 }
 .playerDetails{
   padding:18px;
-  background:color-mix(in srgb, var(--panel2) 82%, #000 18%);
+  background:var(--railCoverSolid, #0b0b12);
 }
 .pdCard{border:1px solid rgba(255,255,255,.08);background:rgba(11,18,32,.70);border-radius:14px;padding:16px;margin-top:14px}
 .pdCard:first-child{margin-top:0}
