@@ -4098,11 +4098,10 @@ body.ballzOpen .gameOverlay{align-items:stretch;justify-content:flex-start}
 .playerDetails .pdCard:first-child .pdToggle{align-self:center}
 .pBarLeft, .pBarRight{display:flex; align-items:center; gap:8px;}
 .pBarLeft{
-  padding:4px;
-  border-radius:12px;
-  border:1px solid rgba(255,255,255,.14);
-  background:rgba(16,30,58,.78);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.06);
+  padding:0;
+  border:0;
+  background:transparent;
+  box-shadow:none;
 }
 .pBarTitle{
   display:flex;
@@ -4137,8 +4136,11 @@ body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .playerDetails{
   padding:12px 14px 14px;
   background:var(--railCoverSolid, #0b0b12);
 }
+body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .gameShell{
+  height:calc(100dvh - var(--ballzTop) - var(--ballzInset));
+}
 body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .playerGameStage{
-  height:calc(100dvh - var(--ballzTop) - (var(--ballzInset) * 2) - 46px);
+  height:calc(100% - 46px);
   min-height:300px;
 }
 body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .playerDetails .pdCard{display:block}
