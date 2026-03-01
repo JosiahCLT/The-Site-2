@@ -4130,6 +4130,17 @@ body.ballzOpen .gameOverlay{align-items:stretch;justify-content:flex-start}
 .pCtrl:hover{background:rgba(255,255,255,.06); border-color:rgba(255,255,255,.16);}
 .pCtrl.active{background:rgba(255,255,255,.08); border-color:rgba(255,255,255,.20); color:rgba(255,255,255,.95);}
 .pCtrl svg{width:18px;height:18px}
+.pCtrl.pCtrlLabeled{
+  width:auto;
+  min-width:34px;
+  padding:0 10px;
+  gap:7px;
+  font-size:11px;
+  font-weight:1000;
+  letter-spacing:.3px;
+  text-transform:uppercase;
+}
+.pCtrl.pCtrlLabeled svg{width:16px;height:16px}
 
 
 body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .playerDetails{
@@ -14376,8 +14387,8 @@ document.getElementById('devResetClaimables')?.addEventListener('click', (e)=>{
 
       <div class="playerBottomBar" aria-label="Player controls">
         <div class="pBarLeft">
-          <button class="pCtrl" id="btnTheatre" type="button" aria-label="Theatre mode" title="Theatre mode"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4.5 7.5h15m-13 0v11a2 2 0 0 0 2 2h7a2 2 0 0 0 2-2v-11" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M9 12h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
-          <button class="pCtrl" id="btnFull" type="button" aria-label="Fullscreen" title="Fullscreen"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 4H4v5M15 4h5v5M9 20H4v-5M15 20h5v-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+          <button class="pCtrl pCtrlLabeled" id="btnTheatre" type="button" aria-label="Theatre mode" title="Theatre mode"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4.5 7.5h15m-13 0v11a2 2 0 0 0 2 2h7a2 2 0 0 0 2-2v-11" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M9 12h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span>Theatre</span></button>
+          <button class="pCtrl pCtrlLabeled" id="btnFull" type="button" aria-label="Fullscreen" title="Fullscreen"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 4H4v5M15 4h5v5M9 20H4v-5M15 20h5v-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Fullscreen</span></button>
         </div>
 
         <div class="pBarTitle" aria-hidden="true">
