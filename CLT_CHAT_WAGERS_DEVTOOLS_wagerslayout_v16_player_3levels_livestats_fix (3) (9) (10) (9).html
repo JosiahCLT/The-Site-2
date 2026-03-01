@@ -4096,22 +4096,20 @@ body.ballzOpen .gameOverlay{align-items:stretch;justify-content:flex-start}
 .playerDetails .pdCard:first-child .pdHead{align-items:center;min-height:44px}
 .playerDetails .pdCard:first-child .pdTitle{font-size:24px;line-height:1}
 .playerDetails .pdCard:first-child .pdToggle{align-self:center}
-.pBarLeft, .pBarRight{display:flex; align-items:center; gap:8px;}
-.pBarLeft{
-  padding:0;
-  border:0;
-  background:transparent;
-  box-shadow:none;
-}
+.pBarRight{display:flex; align-items:center; gap:10px;}
 .pBarTitle{
   display:flex;
   align-items:center;
   gap:8px;
   font-weight:1100;
-  color:rgba(255,255,255,.74);
-  font-size:12px;
-  letter-spacing:.4px;
+  color:rgba(255,255,255,.82);
+  font-size:13px;
+  letter-spacing:.35px;
   user-select:none;
+  border:1px solid rgba(255,255,255,.10);
+  background:linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.03));
+  border-radius:14px;
+  padding:8px 14px;
 }
 .pDot{
   width:7px;height:7px;border-radius:50%;
@@ -4119,17 +4117,25 @@ body.ballzOpen .gameOverlay{align-items:stretch;justify-content:flex-start}
   box-shadow:0 0 0 3px rgba(76,255,183,.15);
 }
 
-.pCtrl{
-  width:34px;height:34px;border-radius:10px;
+.pCtrlSection{
+  height:34px;
+  border-radius:12px;
   border:1px solid rgba(255,255,255,.10);
-  background:rgba(0,0,0,.30);
-  color:rgba(255,255,255,.82);
-  display:inline-flex;align-items:center;justify-content:center;
+  background:linear-gradient(180deg, rgba(255,255,255,.09), rgba(255,255,255,.03));
+  color:rgba(255,255,255,.90);
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:0 12px;
+  font-weight:950;
+  letter-spacing:.2px;
   cursor:pointer;
 }
-.pCtrl:hover{background:rgba(255,255,255,.06); border-color:rgba(255,255,255,.16);}
-.pCtrl.active{background:rgba(255,255,255,.08); border-color:rgba(255,255,255,.20); color:rgba(255,255,255,.95);}
-.pCtrl svg{width:18px;height:18px}
+.pCtrlSection:hover{background:linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.05)); border-color:rgba(255,255,255,.18);}
+.pCtrlSection.active{background:linear-gradient(180deg, rgba(140,200,255,.30), rgba(140,200,255,.14)); border-color:rgba(140,200,255,.50); color:#fff;}
+.pCtrlIcon{display:inline-flex; align-items:center; justify-content:center; width:16px; height:16px;}
+.pCtrlSection svg{width:16px;height:16px}
+.pCtrlLabel{font-size:11px; text-transform:uppercase;}
 
 
 body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .playerDetails{
@@ -4142,6 +4148,7 @@ body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .gameShell{
 body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .playerGameStage{
   height:calc(100% - 46px);
   min-height:300px;
+  border-bottom:0;
 }
 body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .playerDetails .pdCard{display:block}
 body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .playerDetails .pdCard:first-child{
@@ -14375,17 +14382,21 @@ document.getElementById('devResetClaimables')?.addEventListener('click', (e)=>{
       </div>
 
       <div class="playerBottomBar" aria-label="Player controls">
-        <div class="pBarLeft">
-          <button class="pCtrl" id="btnTheatre" type="button" aria-label="Theatre mode" title="Theatre mode"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4.5 7.5h15m-13 0v11a2 2 0 0 0 2 2h7a2 2 0 0 0 2-2v-11" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M9 12h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
-          <button class="pCtrl" id="btnFull" type="button" aria-label="Fullscreen" title="Fullscreen"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 4H4v5M15 4h5v5M9 20H4v-5M15 20h5v-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-        </div>
-
         <div class="pBarTitle" aria-hidden="true">
           <span class="pDot"></span>
           <span id="playerNow">Ballz</span>
         </div>
 
-        <div class="pBarRight"></div>
+        <div class="pBarRight">
+          <button class="pCtrlSection" id="btnTheatre" type="button" aria-label="Theatre mode" title="Theatre mode">
+            <span class="pCtrlIcon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4.5 7.5h15m-13 0v11a2 2 0 0 0 2 2h7a2 2 0 0 0 2-2v-11" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M9 12h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>
+            <span class="pCtrlLabel">Theatre</span>
+          </button>
+          <button class="pCtrlSection" id="btnFull" type="button" aria-label="Fullscreen" title="Fullscreen">
+            <span class="pCtrlIcon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 4H4v5M15 4h5v5M9 20H4v-5M15 20h5v-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            <span class="pCtrlLabel">Fullscreen</span>
+          </button>
+        </div>
       </div>
 
       <div class="playerDetails" id="playerDetails">
@@ -22694,15 +22705,35 @@ body.timerLeft .topbar .timerPill .timerBar{
   --ballzBaseRight: 320px;
   --ballzTheatreWidth: calc(100vw - var(--ballzBaseLeft) - var(--ballzBaseRight));
 }
-/* prevent the main scroll from scrolling while player is open */
+/* Dedicated Ballz page (not an overlay on top of the app) */
 body.ballzOpen #scroll{ overflow:hidden !important; }
-body.ballzOpen.ballzTheatre #scroll{ overflow:auto !important; }
+body.ballzPage #app{ display:none !important; }
+body.ballzPage .gameOverlay{
+  top:0 !important;
+  left:0 !important;
+  right:0 !important;
+  bottom:0 !important;
+  padding:0 !important;
+  background:var(--railCoverSolid, #0b0b12) !important;
+}
+body.ballzPage .gameShell{
+  width:100% !important;
+  max-width:none !important;
+  height:100% !important;
+  border-radius:0 !important;
+  border:0 !important;
+  box-shadow:none !important;
+}
+body.ballzPage .playerWrap{ overflow:hidden !important; }
+body.ballzPage .playerGameStage{
+  flex:1 1 auto !important;
+  height:auto !important;
+  min-height:0 !important;
+  border-bottom:0 !important;
+}
+body.ballzPage .playerDetails{ display:none !important; }
 
-/* Keep overlay in sync with measured sidebar/chat widths */
-body.ballzOpen .gameOverlay{ top: var(--ballzTop) !important; left: var(--ballzLeft) !important; right: var(--ballzRight) !important; bottom:0 !important; }
-body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .gameOverlay{ padding:var(--ballzInset) var(--ballzInset) 0 !important; }
-
-/* Theatre = tighter spacing with the same shell visible */
+/* Theatre mode still applies inside the dedicated page */
 </style>
 
 <script id="clt-ballz-player-boot-v14">
@@ -22859,6 +22890,7 @@ body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .gameOverlay{ padding:va
     overlay.classList.add('show');
     overlay.setAttribute('aria-hidden','false');
     document.body.classList.add('ballzOpen');
+    document.body.classList.add('ballzPage');
     syncBallzRoute(true);
 
     try{ frame.srcdoc = tpl.innerHTML; }catch(e){}
@@ -22871,6 +22903,7 @@ body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .gameOverlay{ padding:va
     overlay.classList.remove('show');
     overlay.setAttribute('aria-hidden','true');
     document.body.classList.remove('ballzOpen');
+    document.body.classList.remove('ballzPage');
     document.body.classList.remove('ballzTheatre');
     document.body.classList.remove('ballzFullscreen');
     if(btnTheatre) btnTheatre.classList.remove('active');
