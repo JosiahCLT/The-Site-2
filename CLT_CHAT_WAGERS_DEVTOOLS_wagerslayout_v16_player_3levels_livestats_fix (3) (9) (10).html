@@ -4022,9 +4022,19 @@ body.ballzOpen .gameOverlay{align-items:stretch;justify-content:flex-start}
   justify-content:space-between;
   gap:10px;
   padding:0 12px;
-  border-top:1px solid rgba(255,255,255,.10);
+  border-top:1px solid rgba(255,255,255,.12);
   background:var(--railCoverSolid, #0b0b12);
+  position:relative;
+  overflow:hidden;
 }
+.playerBottomBar::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:color-mix(in srgb, var(--panel2) 72%, #061022);
+  pointer-events:none;
+}
+.playerBottomBar > *{position:relative;z-index:1}
 .playerDetails{
   padding:18px;
   background:var(--railCoverSolid, #0b0b12);
@@ -4137,6 +4147,7 @@ body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .playerDetails{
   background:var(--railCoverSolid, #0b0b12);
 }
 body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .gameShell{
+  height:calc(100vh - var(--ballzTop) - var(--ballzInset));
   height:calc(100dvh - var(--ballzTop) - var(--ballzInset));
 }
 body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .playerGameStage{
