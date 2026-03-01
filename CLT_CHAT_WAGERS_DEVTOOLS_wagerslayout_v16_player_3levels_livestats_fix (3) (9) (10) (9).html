@@ -4096,7 +4096,7 @@ body.ballzOpen .gameOverlay{align-items:stretch;justify-content:flex-start}
 .playerDetails .pdCard:first-child .pdHead{align-items:center;min-height:44px}
 .playerDetails .pdCard:first-child .pdTitle{font-size:24px;line-height:1}
 .playerDetails .pdCard:first-child .pdToggle{align-self:center}
-.pBarLeft,.pBarRight{flex:1 1 0;display:flex;align-items:center;gap:10px}
+.pBarLeft,.pBarRight{flex:1 1 0;display:flex;align-items:center}
 .pBarLeft{justify-content:flex-start}
 .pBarRight{justify-content:flex-end}
 .pBarTitle{
@@ -4105,14 +4105,10 @@ body.ballzOpen .gameOverlay{align-items:stretch;justify-content:flex-start}
   justify-content:center;
   gap:8px;
   font-weight:1100;
-  color:rgba(255,255,255,.82);
-  font-size:13px;
-  letter-spacing:.35px;
+  color:rgba(255,255,255,.86);
+  font-size:22px;
+  letter-spacing:.2px;
   user-select:none;
-  border:1px solid rgba(255,255,255,.10);
-  background:linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.03));
-  border-radius:14px;
-  padding:8px 14px;
   min-width:140px;
 }
 .pDot{
@@ -4121,11 +4117,20 @@ body.ballzOpen .gameOverlay{align-items:stretch;justify-content:flex-start}
   box-shadow:0 0 0 3px rgba(76,255,183,.15);
 }
 
+.pCtrlGroup{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  border:1px solid rgba(255,255,255,.10);
+  border-radius:14px;
+  padding:4px;
+  background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.02));
+}
 .pCtrlSection{
   height:34px;
-  border-radius:12px;
+  border-radius:10px;
   border:1px solid rgba(255,255,255,.10);
-  background:linear-gradient(180deg, rgba(255,255,255,.09), rgba(255,255,255,.03));
+  background:linear-gradient(180deg, rgba(0,0,0,.22), rgba(255,255,255,.02));
   color:rgba(255,255,255,.90);
   display:inline-flex;
   align-items:center;
@@ -4150,7 +4155,8 @@ body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .gameShell{
   height:calc(100dvh - var(--ballzTop) - var(--ballzInset));
 }
 body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .playerGameStage{
-  height:calc(100% - 46px);
+  flex:1 1 auto;
+  height:auto;
   min-height:300px;
   border-bottom:0;
 }
@@ -14387,14 +14393,16 @@ document.getElementById('devResetClaimables')?.addEventListener('click', (e)=>{
 
       <div class="playerBottomBar" aria-label="Player controls">
         <div class="pBarLeft">
-          <button class="pCtrlSection" id="btnTheatre" type="button" aria-label="Theatre mode" title="Theatre mode">
-            <span class="pCtrlIcon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4.5 7.5h15m-13 0v11a2 2 0 0 0 2 2h7a2 2 0 0 0 2-2v-11" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M9 12h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>
-            <span class="pCtrlLabel">Theatre</span>
-          </button>
-          <button class="pCtrlSection" id="btnFull" type="button" aria-label="Fullscreen" title="Fullscreen">
-            <span class="pCtrlIcon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 4H4v5M15 4h5v5M9 20H4v-5M15 20h5v-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-            <span class="pCtrlLabel">Fullscreen</span>
-          </button>
+          <div class="pCtrlGroup" role="group" aria-label="Player view controls">
+            <button class="pCtrlSection" id="btnTheatre" type="button" aria-label="Theatre mode" title="Theatre mode">
+              <span class="pCtrlIcon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4.5 7.5h15m-13 0v11a2 2 0 0 0 2 2h7a2 2 0 0 0 2-2v-11" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M9 12h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>
+              <span class="pCtrlLabel">Theatre</span>
+            </button>
+            <button class="pCtrlSection" id="btnFull" type="button" aria-label="Fullscreen" title="Fullscreen">
+              <span class="pCtrlIcon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 4H4v5M15 4h5v5M9 20H4v-5M15 20h5v-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+              <span class="pCtrlLabel">Fullscreen</span>
+            </button>
+          </div>
         </div>
 
         <div class="pBarTitle" aria-hidden="true">
