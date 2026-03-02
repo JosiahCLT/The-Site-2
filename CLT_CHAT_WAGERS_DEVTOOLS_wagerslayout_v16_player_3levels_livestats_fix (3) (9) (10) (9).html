@@ -4148,11 +4148,11 @@ body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .gameShell{
   height:calc(100dvh - var(--ballzTop) - var(--ballzInset));
 }
 body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .playerWrap{
-  overflow:hidden;
+  overflow:auto;
 }
 body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .playerGameStage{
-  height:calc(100% - 46px);
-  min-height:300px;
+  flex:0 0 auto;
+  height:clamp(460px, 68vh, 860px);
 }
 body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .playerSpacer{
   display:block;
@@ -4162,9 +4162,8 @@ body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .playerSpacer{
   background:rgba(255,255,255,.02);
 }
 body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .playerDetails{
-  flex:1 1 auto;
-  min-height:0;
-  overflow:auto;
+  flex:0 0 auto;
+  overflow:visible;
   padding:12px 14px 14px;
   background:var(--railCoverSolid, #0b0b12);
 }
