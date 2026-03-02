@@ -4016,18 +4016,18 @@ body.ballzOpen .gameOverlay{align-items:stretch;justify-content:flex-start}
   background:#060912;
 }
 .playerBottomBar{
-  height:52px;
+  height:62px;
   display:flex;
   align-items:center;
   justify-content:space-between;
   gap:10px;
-  padding:0 14px;
-  border-top:0;
-  border-left:1px solid rgba(120,158,220,.22);
-  border-right:1px solid rgba(120,158,220,.22);
-  border-bottom:1px solid rgba(120,158,220,.22);
-  background:var(--railCoverSolid, #0b0b12);
-  box-shadow:none;
+  padding:0;
+  border-top:1px solid rgba(120,158,220,.30);
+  border-left:0;
+  border-right:0;
+  border-bottom:1px solid rgba(120,158,220,.34);
+  background:color-mix(in srgb, var(--railCoverSolid, #0b0b12) 86%, #102043 14%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.04), inset 0 -1px 0 rgba(0,0,0,.25);
 }
 .playerDetails{
   padding:18px;
@@ -4100,13 +4100,30 @@ body.ballzOpen .gameOverlay{align-items:stretch;justify-content:flex-start}
 .playerDetails .pdCard:first-child .pdHead{align-items:center;min-height:44px}
 .playerDetails .pdCard:first-child .pdTitle{font-size:24px;line-height:1}
 .playerDetails .pdCard:first-child .pdToggle{align-self:center}
-.pBarLeft, .pBarRight{display:flex; align-items:center; gap:8px;}
-.pBarLeft{
-  padding:0;
-  border:0;
-  background:transparent;
-  box-shadow:none;
+.pBarActions{
+  width:100%;
+  min-height:62px;
+  display:grid;
+  grid-template-columns:1fr auto 1fr;
+  align-items:center;
+  gap:12px;
+  padding:10px 14px;
+  border-radius:0;
+  border-top:1px solid rgba(255,255,255,.14);
+  border-bottom:1px solid rgba(255,255,255,.12);
+  border-left:0;
+  border-right:0;
+  background:linear-gradient(180deg,
+    color-mix(in srgb, var(--railCoverSolid, #0b0b12) 82%, #16305a 18%),
+    color-mix(in srgb, var(--railCoverSolid, #0b0b12) 90%, #122645 10%));
 }
+.pBarActionBtns{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  justify-self:start;
+}
+.pBarSpacer{justify-self:end}
 .pBarTitle{
   display:flex;
   align-items:center;
@@ -4124,7 +4141,7 @@ body.ballzOpen .gameOverlay{align-items:stretch;justify-content:flex-start}
 }
 
 .pCtrl{
-  width:34px;height:34px;border-radius:10px;
+  width:34px;height:34px;border-radius:9px;
   border:1px solid rgba(255,255,255,.10);
   background:var(--railCoverSolid, #0b0b12);
   color:rgba(255,255,255,.82);
@@ -4134,20 +4151,64 @@ body.ballzOpen .gameOverlay{align-items:stretch;justify-content:flex-start}
 .pCtrl:hover{background:color-mix(in srgb, var(--railCoverSolid, #0b0b12) 88%, #111a30 12%); border-color:rgba(255,255,255,.24);}
 .pCtrl.active{background:color-mix(in srgb, var(--railCoverSolid, #0b0b12) 80%, #1a2746 20%); border-color:rgba(255,255,255,.30); color:rgba(255,255,255,.95);}
 .pCtrl svg{width:18px;height:18px}
-.pCtrl.pCtrlLabeled{
-  width:auto;
-  min-width:300px;
-  padding:0 24px;
-  gap:7px;
-  font-size:11px;
-  font-weight:1000;
-  letter-spacing:.3px;
-  text-transform:uppercase;
-  justify-content:center;
-  border-radius:9px;
+.pCtrl.hasTip{position:relative}
+.pCtrl.hasTip::after{
+  content:attr(data-tip);
+  position:absolute;
+  left:50%;
+  bottom:calc(100% + 8px);
+  transform:translate(-50%, 4px);
+  opacity:0;
+  pointer-events:none;
+  white-space:nowrap;
+  padding:6px 10px;
+  border-radius:8px;
+  border:1px solid rgba(140,190,255,.36);
+  background:linear-gradient(180deg, #0f1d38, #0b1326);
+  color:#e9f1ff;
+  font-size:12px;
+  font-weight:900;
+  letter-spacing:.2px;
+  box-shadow:0 10px 26px rgba(0,0,0,.45);
+  transition:opacity .12s ease, transform .12s ease;
+  z-index:8;
 }
-.pCtrl.pCtrlLabeled svg{width:16px;height:16px}
-
+.pCtrl.hasTip::before{
+  content:"";
+  position:absolute;
+  left:50%;
+  bottom:calc(100% + 2px);
+  transform:translateX(-50%);
+  width:8px;height:8px;
+  rotate:45deg;
+  border-right:1px solid rgba(140,190,255,.36);
+  border-bottom:1px solid rgba(140,190,255,.36);
+  background:#0b1326;
+  opacity:0;
+  transition:opacity .12s ease;
+  pointer-events:none;
+  z-index:7;
+}
+.pCtrl.hasTip:hover::after,
+.pCtrl.hasTip:hover::before,
+.pCtrl.hasTip:focus-visible::after,
+.pCtrl.hasTip:focus-visible::before{
+  opacity:1;
+}
+.pCtrl.hasTip:hover::after,
+.pCtrl.hasTip:focus-visible::after{transform:translate(-50%, 0)}
+.pBarActionBtns .pCtrl.hasTip:first-child::after{
+  left:0;
+  transform:translateY(4px);
+}
+.pBarActionBtns .pCtrl.hasTip:first-child::before{
+  left:14px;
+  transform:none;
+}
+.pBarActionBtns .pCtrl.hasTip:first-child:hover::after,
+.pBarActionBtns .pCtrl.hasTip:first-child:focus-visible::after{
+  transform:translateY(0);
+}
 
 body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .playerDetails{
   padding:12px 14px 14px;
@@ -4157,14 +4218,20 @@ body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .gameShell{
   height:calc(100dvh - var(--ballzTop) - var(--ballzInset));
 }
 body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .playerGameStage{
-  height:calc(100% - 52px);
-  min-height:300px;
+  height:calc(100% - 130px);
+  min-height:420px;
 }
 body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .playerDetails .pdCard{display:block}
 body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .playerDetails .pdCard:first-child{
   width:100%;
   padding:10px 12px;
-  margin:0;
+  margin-top:8px;
+}
+body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .playerDetails .pdCard:nth-of-type(2){
+  margin-top:44px !important;
+}
+body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .playerDetails .pdCard:nth-of-type(3){
+  margin-top:34px !important;
 }
 body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .playerDetails .pdCard:first-child .pdHead{
   min-height:30px;
@@ -14392,17 +14459,19 @@ document.getElementById('devResetClaimables')?.addEventListener('click', (e)=>{
       </div>
 
       <div class="playerBottomBar" aria-label="Player controls">
-        <div class="pBarLeft">
-          <button class="pCtrl pCtrlLabeled" id="btnTheatre" type="button" aria-label="Theatre mode" title="Theatre mode"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4.5 7.5h15m-13 0v11a2 2 0 0 0 2 2h7a2 2 0 0 0 2-2v-11" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M9 12h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span>Theatre</span></button>
-          <button class="pCtrl pCtrlLabeled" id="btnFull" type="button" aria-label="Fullscreen" title="Fullscreen"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 4H4v5M15 4h5v5M9 20H4v-5M15 20h5v-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Fullscreen</span></button>
-        </div>
+        <div class="pBarActions" aria-label="Display controls">
+          <div class="pBarActionBtns">
+            <button class="pCtrl hasTip" id="btnTheatre" type="button" aria-label="Theatre mode" data-tip="Theatre mode"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4.5 7.5h15m-13 0v11a2 2 0 0 0 2 2h7a2 2 0 0 0 2-2v-11" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M9 12h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
+            <button class="pCtrl hasTip" id="btnFull" type="button" aria-label="Fullscreen" data-tip="Fullscreen"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 4H4v5M15 4h5v5M9 20H4v-5M15 20h5v-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+          </div>
 
-        <div class="pBarTitle" aria-hidden="true">
-          <span class="pDot"></span>
-          <span id="playerNow">Ballz</span>
-        </div>
+          <div class="pBarTitle" aria-hidden="true">
+            <span class="pDot"></span>
+            <span id="playerNow">Ballz</span>
+          </div>
 
-        <div class="pBarRight"></div>
+          <div class="pBarSpacer" aria-hidden="true"></div>
+        </div>
       </div>
 
       <div class="playerDetails" id="playerDetails">
@@ -22712,11 +22781,23 @@ body.timerLeft .topbar .timerPill .timerBar{
   --ballzTheatreWidth: calc(100vw - var(--ballzBaseLeft) - var(--ballzBaseRight));
 }
 /* prevent the main scroll from scrolling while player is open */
-body.ballzOpen #scroll{ overflow:hidden !important; }
-body.ballzOpen.ballzTheatre #scroll{ overflow:auto !important; }
+body.ballzOpen #scroll{
+  overflow:hidden !important;
+  opacity:0;
+  pointer-events:none;
+}
+body.ballzOpen .panel.main{
+  background:var(--railCoverSolid, #0b0b12);
+}
 
 /* Keep overlay in sync with measured sidebar/chat widths */
-body.ballzOpen .gameOverlay{ top: var(--ballzTop) !important; left: var(--ballzLeft) !important; right: var(--ballzRight) !important; bottom:0 !important; }
+body.ballzOpen .gameOverlay{
+  top: var(--ballzTop) !important;
+  left: var(--ballzLeft) !important;
+  right: var(--ballzRight) !important;
+  bottom:0 !important;
+  background:var(--railCoverSolid, #0b0b12) !important;
+}
 body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .gameOverlay{ padding:var(--ballzInset) var(--ballzInset) 0 !important; }
 
 /* Theatre = tighter spacing with the same shell visible */
@@ -22776,7 +22857,9 @@ body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .gameOverlay{ padding:va
     bindInfoToggle();
 
     var ensureRowsForLimit = function(){
-      document.querySelectorAll('#playerDetails .pdPane table tbody').forEach(function(tbody){
+      var betHost = byId('pdBetTabs') ? byId('pdBetTabs').closest('.pdCard') : null;
+      if(!betHost) return;
+      betHost.querySelectorAll('.pdPane table tbody').forEach(function(tbody){
         var rows = Array.prototype.slice.call(tbody.querySelectorAll('tr'));
         if(!rows.length || rows.length >= 40) return;
         var base = rows.slice();
@@ -22798,7 +22881,9 @@ body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .gameOverlay{ padding:va
     if(limitSel && limitSel.dataset.bound !== '1'){
       var applyLimit = function(){
         var limit = Number(limitSel.value || 0);
-        document.querySelectorAll('#playerDetails .pdPane table tbody').forEach(function(tbody){
+        var betHost = byId('pdBetTabs') ? byId('pdBetTabs').closest('.pdCard') : null;
+        if(!betHost) return;
+        betHost.querySelectorAll('.pdPane table tbody').forEach(function(tbody){
           Array.prototype.forEach.call(tbody.querySelectorAll('tr'), function(row, idx){
             row.style.display = (!limit || idx < limit) ? '' : 'none';
           });
@@ -22829,11 +22914,14 @@ body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .gameOverlay{ padding:va
       var app = byId('app');
       var leftCollapsed = !!(app && app.classList.contains('left-collapsed'));
       var rightCollapsed = !!(app && app.classList.contains('right-collapsed'));
-      if(leftCollapsed !== rightCollapsed){
-        var sharedPad = Math.max(lsW, rsW);
+      var bothOpen = !leftCollapsed && !rightCollapsed;
+      if(!bothOpen){
+        var minCollapsedPad = 72;
+        var sharedPad = Math.max(lsW, rsW, minCollapsedPad);
         lsW = sharedPad;
         rsW = sharedPad;
       }
+
       document.documentElement.style.setProperty('--ballzLeft', lsW + 'px');
       document.documentElement.style.setProperty('--ballzRight', rsW + 'px');
       document.documentElement.style.setProperty('--ballzTop', topH + 'px');
