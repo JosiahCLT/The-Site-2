@@ -4141,7 +4141,7 @@ body.ballzOpen .gameOverlay{align-items:stretch;justify-content:flex-start}
 }
 
 .pCtrl{
-  width:30px;height:30px;border-radius:8px;
+  width:34px;height:34px;border-radius:9px;
   border:1px solid rgba(255,255,255,.10);
   background:var(--railCoverSolid, #0b0b12);
   color:rgba(255,255,255,.82);
@@ -4150,7 +4150,53 @@ body.ballzOpen .gameOverlay{align-items:stretch;justify-content:flex-start}
 }
 .pCtrl:hover{background:color-mix(in srgb, var(--railCoverSolid, #0b0b12) 88%, #111a30 12%); border-color:rgba(255,255,255,.24);}
 .pCtrl.active{background:color-mix(in srgb, var(--railCoverSolid, #0b0b12) 80%, #1a2746 20%); border-color:rgba(255,255,255,.30); color:rgba(255,255,255,.95);}
-.pCtrl svg{width:16px;height:16px}
+.pCtrl svg{width:18px;height:18px}
+.pCtrl.hasTip{position:relative}
+.pCtrl.hasTip::after{
+  content:attr(data-tip);
+  position:absolute;
+  left:50%;
+  bottom:calc(100% + 8px);
+  transform:translate(-50%, 4px);
+  opacity:0;
+  pointer-events:none;
+  white-space:nowrap;
+  padding:6px 10px;
+  border-radius:8px;
+  border:1px solid rgba(140,190,255,.36);
+  background:linear-gradient(180deg, #0f1d38, #0b1326);
+  color:#e9f1ff;
+  font-size:12px;
+  font-weight:900;
+  letter-spacing:.2px;
+  box-shadow:0 10px 26px rgba(0,0,0,.45);
+  transition:opacity .12s ease, transform .12s ease;
+  z-index:8;
+}
+.pCtrl.hasTip::before{
+  content:"";
+  position:absolute;
+  left:50%;
+  bottom:calc(100% + 2px);
+  transform:translateX(-50%);
+  width:8px;height:8px;
+  rotate:45deg;
+  border-right:1px solid rgba(140,190,255,.36);
+  border-bottom:1px solid rgba(140,190,255,.36);
+  background:#0b1326;
+  opacity:0;
+  transition:opacity .12s ease;
+  pointer-events:none;
+  z-index:7;
+}
+.pCtrl.hasTip:hover::after,
+.pCtrl.hasTip:hover::before,
+.pCtrl.hasTip:focus-visible::after,
+.pCtrl.hasTip:focus-visible::before{
+  opacity:1;
+}
+.pCtrl.hasTip:hover::after,
+.pCtrl.hasTip:focus-visible::after{transform:translate(-50%, 0)}
 
 body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .playerDetails{
   padding:12px 14px 14px;
@@ -4160,7 +4206,7 @@ body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .gameShell{
   height:calc(100dvh - var(--ballzTop) - var(--ballzInset));
 }
 body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .playerGameStage{
-  height:calc(100% - 52px);
+  height:calc(100% - 62px);
   min-height:300px;
 }
 body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .playerDetails .pdCard{display:block}
@@ -14397,8 +14443,8 @@ document.getElementById('devResetClaimables')?.addEventListener('click', (e)=>{
       <div class="playerBottomBar" aria-label="Player controls">
         <div class="pBarActions" aria-label="Display controls">
           <div class="pBarActionBtns">
-            <button class="pCtrl" id="btnTheatre" type="button" aria-label="Theatre mode" title="Theatre mode"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4.5 7.5h15m-13 0v11a2 2 0 0 0 2 2h7a2 2 0 0 0 2-2v-11" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M9 12h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
-            <button class="pCtrl" id="btnFull" type="button" aria-label="Fullscreen" title="Fullscreen"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 4H4v5M15 4h5v5M9 20H4v-5M15 20h5v-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+            <button class="pCtrl hasTip" id="btnTheatre" type="button" aria-label="Theatre mode" data-tip="Theatre mode"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4.5 7.5h15m-13 0v11a2 2 0 0 0 2 2h7a2 2 0 0 0 2-2v-11" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M9 12h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
+            <button class="pCtrl hasTip" id="btnFull" type="button" aria-label="Fullscreen" data-tip="Fullscreen"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 4H4v5M15 4h5v5M9 20H4v-5M15 20h5v-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
           </div>
 
           <div class="pBarTitle" aria-hidden="true">
