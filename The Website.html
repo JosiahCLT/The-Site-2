@@ -4197,6 +4197,18 @@ body.ballzOpen .gameOverlay{align-items:stretch;justify-content:flex-start}
 }
 .pCtrl.hasTip:hover::after,
 .pCtrl.hasTip:focus-visible::after{transform:translate(-50%, 0)}
+.pBarActionBtns .pCtrl.hasTip:first-child::after{
+  left:0;
+  transform:translateY(4px);
+}
+.pBarActionBtns .pCtrl.hasTip:first-child::before{
+  left:14px;
+  transform:none;
+}
+.pBarActionBtns .pCtrl.hasTip:first-child:hover::after,
+.pBarActionBtns .pCtrl.hasTip:first-child:focus-visible::after{
+  transform:translateY(0);
+}
 
 body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .playerDetails{
   padding:12px 14px 14px;
@@ -4206,8 +4218,8 @@ body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .gameShell{
   height:calc(100dvh - var(--ballzTop) - var(--ballzInset));
 }
 body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .playerGameStage{
-  height:calc(100% - 62px);
-  min-height:300px;
+  height:calc(100% - 210px);
+  min-height:280px;
 }
 body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .playerDetails .pdCard{display:block}
 body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .playerDetails .pdCard:first-child{
