@@ -4225,7 +4225,13 @@ body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .playerDetails .pdCard{d
 body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .playerDetails .pdCard:first-child{
   width:100%;
   padding:10px 12px;
-  margin:0;
+  margin-top:8px;
+}
+body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .playerDetails .pdCard:nth-child(2){
+  margin-top:22px;
+}
+body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .playerDetails .pdCard:nth-child(3){
+  margin-top:24px;
 }
 body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .playerDetails .pdCard:first-child .pdHead{
   min-height:30px;
@@ -22839,7 +22845,9 @@ body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .gameOverlay{ padding:va
     bindInfoToggle();
 
     var ensureRowsForLimit = function(){
-      document.querySelectorAll('#playerDetails .pdPane table tbody').forEach(function(tbody){
+      var betHost = byId('pdBetTabs') ? byId('pdBetTabs').closest('.pdCard') : null;
+      if(!betHost) return;
+      betHost.querySelectorAll('.pdPane table tbody').forEach(function(tbody){
         var rows = Array.prototype.slice.call(tbody.querySelectorAll('tr'));
         if(!rows.length || rows.length >= 40) return;
         var base = rows.slice();
@@ -22861,7 +22869,9 @@ body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .gameOverlay{ padding:va
     if(limitSel && limitSel.dataset.bound !== '1'){
       var applyLimit = function(){
         var limit = Number(limitSel.value || 0);
-        document.querySelectorAll('#playerDetails .pdPane table tbody').forEach(function(tbody){
+        var betHost = byId('pdBetTabs') ? byId('pdBetTabs').closest('.pdCard') : null;
+        if(!betHost) return;
+        betHost.querySelectorAll('.pdPane table tbody').forEach(function(tbody){
           Array.prototype.forEach.call(tbody.querySelectorAll('tr'), function(row, idx){
             row.style.display = (!limit || idx < limit) ? '' : 'none';
           });
