@@ -4021,7 +4021,7 @@ body.ballzOpen .gameOverlay{align-items:stretch;justify-content:flex-start}
   align-items:center;
   justify-content:space-between;
   gap:10px;
-  padding:0 14px;
+  padding:6px 14px;
   border-top:0;
   border-left:1px solid rgba(120,158,220,.22);
   border-right:1px solid rgba(120,158,220,.22);
@@ -4100,22 +4100,25 @@ body.ballzOpen .gameOverlay{align-items:stretch;justify-content:flex-start}
 .playerDetails .pdCard:first-child .pdHead{align-items:center;min-height:44px}
 .playerDetails .pdCard:first-child .pdTitle{font-size:24px;line-height:1}
 .playerDetails .pdCard:first-child .pdToggle{align-self:center}
-.pBarLeft, .pBarRight{display:flex; align-items:center; gap:8px;}
-.pBarLeft{
-  padding:0;
-  border:0;
-  background:transparent;
-  box-shadow:none;
-}
 .pBarActions{
-  display:inline-flex;
+  width:100%;
+  min-height:40px;
+  display:grid;
+  grid-template-columns:1fr auto 1fr;
   align-items:center;
-  gap:8px;
-  padding:6px 8px;
+  gap:12px;
+  padding:6px 12px;
   border-radius:12px;
   border:1px solid rgba(255,255,255,.12);
   background:rgba(8,14,26,.72);
 }
+.pBarActionBtns{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  justify-self:start;
+}
+.pBarSpacer{justify-self:end}
 .pBarTitle{
   display:flex;
   align-items:center;
@@ -14387,19 +14390,19 @@ document.getElementById('devResetClaimables')?.addEventListener('click', (e)=>{
       </div>
 
       <div class="playerBottomBar" aria-label="Player controls">
-        <div class="pBarLeft">
-          <div class="pBarActions" aria-label="Display controls">
+        <div class="pBarActions" aria-label="Display controls">
+          <div class="pBarActionBtns">
             <button class="pCtrl" id="btnTheatre" type="button" aria-label="Theatre mode" title="Theatre mode"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4.5 7.5h15m-13 0v11a2 2 0 0 0 2 2h7a2 2 0 0 0 2-2v-11" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M9 12h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
             <button class="pCtrl" id="btnFull" type="button" aria-label="Fullscreen" title="Fullscreen"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 4H4v5M15 4h5v5M9 20H4v-5M15 20h5v-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
           </div>
-        </div>
 
-        <div class="pBarTitle" aria-hidden="true">
-          <span class="pDot"></span>
-          <span id="playerNow">Ballz</span>
-        </div>
+          <div class="pBarTitle" aria-hidden="true">
+            <span class="pDot"></span>
+            <span id="playerNow">Ballz</span>
+          </div>
 
-        <div class="pBarRight"></div>
+          <div class="pBarSpacer" aria-hidden="true"></div>
+        </div>
       </div>
 
       <div class="playerDetails" id="playerDetails">
