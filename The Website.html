@@ -22781,8 +22781,20 @@ body.timerLeft .topbar .timerPill .timerBar{
   --ballzTheatreWidth: calc(100vw - var(--ballzBaseLeft) - var(--ballzBaseRight));
 }
 /* prevent the main scroll from scrolling while player is open */
-body.ballzOpen #scroll{ overflow:hidden !important; }
-body.ballzOpen.ballzTheatre #scroll{ overflow:auto !important; }
+body.ballzOpen #scroll{
+  overflow:hidden !important;
+  opacity:0;
+  pointer-events:none;
+}
+body.ballzOpen .panel.main{
+  background:var(--railCoverSolid, #0b0b12);
+}
+body.ballzOpen.ballzTheatre #scroll,
+body.ballzOpen.ballzFullscreen #scroll{
+  overflow:auto !important;
+  opacity:1;
+  pointer-events:auto;
+}
 
 /* Keep overlay in sync with measured sidebar/chat widths */
 body.ballzOpen .gameOverlay{ top: var(--ballzTop) !important; left: var(--ballzLeft) !important; right: var(--ballzRight) !important; bottom:0 !important; }
@@ -22902,11 +22914,22 @@ body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .gameOverlay{ padding:va
       var app = byId('app');
       var leftCollapsed = !!(app && app.classList.contains('left-collapsed'));
       var rightCollapsed = !!(app && app.classList.contains('right-collapsed'));
-      if(leftCollapsed !== rightCollapsed){
+      var isTheatre = document.body.classList.contains('ballzTheatre');
+      var rootStyles = getComputedStyle(document.documentElement);
+      var baseLeft = parseInt(rootStyles.getPropertyValue('--ballzBaseLeft'), 10) || 260;
+      var baseRight = parseInt(rootStyles.getPropertyValue('--ballzBaseRight'), 10) || 320;
+
+      if(isTheatre){
+        if(leftCollapsed && rightCollapsed){
+          lsW = baseLeft;
+          rsW = baseRight;
+        }
+      }else if(leftCollapsed !== rightCollapsed){
         var sharedPad = Math.max(lsW, rsW);
         lsW = sharedPad;
         rsW = sharedPad;
       }
+
       document.documentElement.style.setProperty('--ballzLeft', lsW + 'px');
       document.documentElement.style.setProperty('--ballzRight', rsW + 'px');
       document.documentElement.style.setProperty('--ballzTop', topH + 'px');
