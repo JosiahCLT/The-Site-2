@@ -22789,15 +22789,15 @@ body.ballzOpen #scroll{
 body.ballzOpen .panel.main{
   background:var(--railCoverSolid, #0b0b12);
 }
-body.ballzOpen.ballzTheatre #scroll,
-body.ballzOpen.ballzFullscreen #scroll{
-  overflow:auto !important;
-  opacity:1;
-  pointer-events:auto;
-}
 
 /* Keep overlay in sync with measured sidebar/chat widths */
-body.ballzOpen .gameOverlay{ top: var(--ballzTop) !important; left: var(--ballzLeft) !important; right: var(--ballzRight) !important; bottom:0 !important; }
+body.ballzOpen .gameOverlay{
+  top: var(--ballzTop) !important;
+  left: var(--ballzLeft) !important;
+  right: var(--ballzRight) !important;
+  bottom:0 !important;
+  background:var(--railCoverSolid, #0b0b12) !important;
+}
 body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .gameOverlay{ padding:var(--ballzInset) var(--ballzInset) 0 !important; }
 
 /* Theatre = tighter spacing with the same shell visible */
@@ -22921,8 +22921,13 @@ body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .gameOverlay{ padding:va
 
       if(isTheatre){
         if(leftCollapsed && rightCollapsed){
-          lsW = baseLeft;
-          rsW = baseRight;
+          var reserve = Math.round((baseLeft + baseRight) / 2);
+          lsW = reserve;
+          rsW = reserve;
+        }else if(leftCollapsed !== rightCollapsed){
+          var theatreSharedPad = Math.max(lsW, rsW);
+          lsW = theatreSharedPad;
+          rsW = theatreSharedPad;
         }
       }else if(leftCollapsed !== rightCollapsed){
         var sharedPad = Math.max(lsW, rsW);
