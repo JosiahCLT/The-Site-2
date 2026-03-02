@@ -4098,10 +4098,14 @@ body.ballzOpen .gameOverlay{align-items:stretch;justify-content:flex-start}
 .playerDetails .pdCard:first-child .pdToggle{align-self:center}
 .pBarLeft, .pBarRight{display:flex; align-items:center; gap:8px;}
 .pBarLeft{
-  padding:0;
-  border:0;
-  background:transparent;
-  box-shadow:none;
+  padding:3px;
+  border:1px solid rgba(120,158,220,.22);
+  border-radius:12px;
+  background:
+    linear-gradient(180deg, rgba(22,36,68,.28), rgba(7,12,26,.72));
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.07),
+    0 10px 28px rgba(0,0,0,.22);
 }
 .pBarTitle{
   display:flex;
@@ -4139,6 +4143,7 @@ body.ballzOpen .gameOverlay{align-items:stretch;justify-content:flex-start}
   font-weight:1000;
   letter-spacing:.3px;
   text-transform:uppercase;
+  border-radius:9px;
 }
 .pCtrl.pCtrlLabeled svg{width:16px;height:16px}
 
