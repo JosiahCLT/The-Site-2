@@ -4025,6 +4025,7 @@ body.ballzOpen .gameOverlay{align-items:stretch;justify-content:flex-start}
   border-top:1px solid rgba(255,255,255,.10);
   background:var(--railCoverSolid, #0b0b12);
 }
+.playerSpacer{display:none}
 .playerDetails{
   padding:18px;
   background:var(--railCoverSolid, #0b0b12);
@@ -4143,16 +4144,29 @@ body.ballzOpen .gameOverlay{align-items:stretch;justify-content:flex-start}
 .pCtrl.pCtrlLabeled svg{width:16px;height:16px}
 
 
-body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .playerDetails{
-  padding:12px 14px 14px;
-  background:var(--railCoverSolid, #0b0b12);
-}
 body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .gameShell{
   height:calc(100dvh - var(--ballzTop) - var(--ballzInset));
+}
+body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .playerWrap{
+  overflow:hidden;
 }
 body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .playerGameStage{
   height:calc(100% - 46px);
   min-height:300px;
+}
+body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .playerSpacer{
+  display:block;
+  height:54px;
+  border-top:1px solid rgba(255,255,255,.08);
+  border-bottom:1px solid rgba(255,255,255,.08);
+  background:rgba(255,255,255,.02);
+}
+body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .playerDetails{
+  flex:1 1 auto;
+  min-height:0;
+  overflow:auto;
+  padding:12px 14px 14px;
+  background:var(--railCoverSolid, #0b0b12);
 }
 body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .playerDetails .pdCard{display:block}
 body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .playerDetails .pdCard:first-child{
@@ -14398,6 +14412,8 @@ document.getElementById('devResetClaimables')?.addEventListener('click', (e)=>{
 
         <div class="pBarRight"></div>
       </div>
+
+      <div class="playerSpacer" aria-hidden="true"></div>
 
       <div class="playerDetails" id="playerDetails">
         <section class="pdCard pdCollapsed">
