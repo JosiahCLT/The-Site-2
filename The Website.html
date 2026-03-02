@@ -4016,13 +4016,13 @@ body.ballzOpen .gameOverlay{align-items:stretch;justify-content:flex-start}
   background:#060912;
 }
 .playerBottomBar{
-  height:60px;
+  height:62px;
   display:flex;
   align-items:center;
   justify-content:space-between;
   gap:10px;
   padding:0;
-  border-top:0;
+  border-top:1px solid rgba(120,158,220,.18);
   border-left:0;
   border-right:0;
   border-bottom:1px solid rgba(120,158,220,.22);
@@ -4102,15 +4102,20 @@ body.ballzOpen .gameOverlay{align-items:stretch;justify-content:flex-start}
 .playerDetails .pdCard:first-child .pdToggle{align-self:center}
 .pBarActions{
   width:100%;
-  min-height:60px;
+  min-height:62px;
   display:grid;
   grid-template-columns:1fr auto 1fr;
   align-items:center;
   gap:12px;
   padding:10px 14px;
   border-radius:0;
-  border:0;
-  background:var(--railCoverSolid, #0b0b12);
+  border-top:1px solid rgba(255,255,255,.08);
+  border-bottom:1px solid rgba(255,255,255,.08);
+  border-left:0;
+  border-right:0;
+  background:linear-gradient(180deg,
+    color-mix(in srgb, var(--railCoverSolid, #0b0b12) 92%, #12203f 8%),
+    var(--railCoverSolid, #0b0b12));
 }
 .pBarActionBtns{
   display:flex;
