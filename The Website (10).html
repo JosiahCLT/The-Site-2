@@ -9279,31 +9279,25 @@ poster.style.setProperty('--my', my.toFixed(1) + '%');
 
 tile.querySelector('.playPill')?.addEventListener('click', (e)=>{
 e.stopPropagation();
-if(String(it.name||'') === 'Ballz'){
-  try{
-    (window.launchBallz ? window.launchBallz() : document.getElementById('btnLaunchBallz')?.click());
-  }catch(err){}
-  try{ addUserSession(it.name); }catch(_){}
-  try{ addUserBet(it.name); }catch(_){}
-  return;
-}
-toast('▶️', 'Play: ' + it.name);
-addUserSession(it.name);
-addUserBet(it.name);
+try{
+  if(window.launchGameRoute) window.launchGameRoute(it);
+  else if(window.launchBallz && String(it.name||'') === 'Ballz') window.launchBallz();
+  else toast('▶️', 'Play: ' + it.name);
+}catch(err){}
+try{ addUserSession(it.name); }catch(_){}
+try{ addUserBet(it.name); }catch(_){}
 });
 
 tile.addEventListener('click', ()=>{
-if(String(it.name||'') === 'Ballz'){
-  try{
-    (window.launchBallz ? window.launchBallz() : document.getElementById('btnLaunchBallz')?.click());
-  }catch(err){}
-  try{ addUserSession(it.name); }catch(_){}
-  try{ addUserBet(it.name); }catch(_){}
-  return;
-}
 document.querySelectorAll('.tile.selected').forEach(t=>t.classList.remove('selected'));
 tile.classList.add('selected');
-toast('🎮', it.name);
+try{
+  if(window.launchGameRoute) window.launchGameRoute(it);
+  else if(window.launchBallz && String(it.name||'') === 'Ballz') window.launchBallz();
+  else toast('🎮', it.name);
+}catch(err){}
+try{ addUserSession(it.name); }catch(_){}
+try{ addUserBet(it.name); }catch(_){}
 });
 car.appendChild(tile);
 });
@@ -11023,31 +11017,25 @@ poster.style.setProperty('--my', my.toFixed(1) + '%');
 
 tile.querySelector('.playPill')?.addEventListener('click', (e)=>{
 e.stopPropagation();
-if(String(it.name||'') === 'Ballz'){
-  try{
-    (window.launchBallz ? window.launchBallz() : document.getElementById('btnLaunchBallz')?.click());
-  }catch(err){}
-  try{ addUserSession(it.name); }catch(_){}
-  try{ addUserBet(it.name); }catch(_){}
-  return;
-}
-toast('▶️', 'Play: ' + it.name);
-addUserSession(it.name);
-addUserBet(it.name);
+try{
+  if(window.launchGameRoute) window.launchGameRoute(it);
+  else if(window.launchBallz && String(it.name||'') === 'Ballz') window.launchBallz();
+  else toast('▶️', 'Play: ' + it.name);
+}catch(err){}
+try{ addUserSession(it.name); }catch(_){}
+try{ addUserBet(it.name); }catch(_){}
 });
 
 tile.addEventListener('click', ()=>{
-if(String(it.name||'') === 'Ballz'){
-  try{
-    (window.launchBallz ? window.launchBallz() : document.getElementById('btnLaunchBallz')?.click());
-  }catch(err){}
-  try{ addUserSession(it.name); }catch(_){}
-  try{ addUserBet(it.name); }catch(_){}
-  return;
-}
 document.querySelectorAll('.tile.selected').forEach(t=>t.classList.remove('selected'));
 tile.classList.add('selected');
-toast('🎮', it.name);
+try{
+  if(window.launchGameRoute) window.launchGameRoute(it);
+  else if(window.launchBallz && String(it.name||'') === 'Ballz') window.launchBallz();
+  else toast('🎮', it.name);
+}catch(err){}
+try{ addUserSession(it.name); }catch(_){}
+try{ addUserBet(it.name); }catch(_){}
 });
 return tile;
 }
@@ -23072,6 +23060,16 @@ body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .gameOverlay{ padding:va
     try{ history.pushState({cltGame:meta}, '', '/play/' + meta.type + '/' + meta.id); }catch(e){ return; }
     renderGameRoute();
   }
+  function launchGameRoute(it){
+    var name = String((it && it.name) || 'Game');
+    if(/ballz/i.test(name)){
+      navigateToGame({type:'original', id:'ballz', title:'Ballz', launchUrl:getBallzLaunchUrl()});
+      return;
+    }
+    var provider = String((it && it.provider) || 'Provider');
+    var id = slugify(name + '-' + provider);
+    navigateToGame({type:'provider', id:id, title:name, launchUrl:defaultProviderUrl({id:id})});
+  }
   function openBallz(){
     navigateToGame({type:'original', id:'ballz', title:'Ballz', launchUrl:getBallzLaunchUrl()});
   }
@@ -23080,9 +23078,18 @@ body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .gameOverlay{ padding:va
     renderGameRoute();
   }
 
+  window.launchGameRoute = launchGameRoute;
   window.launchBallz = openBallz;
   window.closeBallz = closeBallz;
   initPlayerDetails();
+
+  var launchBallzBtn = byId('btnLaunchBallz');
+  if(launchBallzBtn){
+    launchBallzBtn.addEventListener('click', function(e){
+      e.preventDefault();
+      openBallz();
+    });
+  }
 
   function tryLaunchFromTarget(t){
     if(!t || !t.closest) return false;
