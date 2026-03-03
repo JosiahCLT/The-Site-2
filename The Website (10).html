@@ -22785,8 +22785,19 @@ body.ballzOpen #scroll{ overflow:hidden !important; }
 body.ballzOpen.ballzTheatre #scroll{ overflow:auto !important; }
 
 /* Keep overlay in sync with measured sidebar/chat widths */
-body.ballzOpen .gameOverlay{ top: var(--ballzTop) !important; left: var(--ballzLeft) !important; right: var(--ballzRight) !important; bottom:0 !important; }
+body.ballzOpen .gameOverlay{ 
+  top: var(--ballzTop) !important; 
+  left: var(--ballzLeft) !important; 
+  right: var(--ballzRight) !important; 
+  bottom:0 !important;
+  background:var(--railCoverSolid, #0b0b12) !important;
+  transition:left .26s ease, right .26s ease, top .26s ease, padding .26s ease;
+}
 body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .gameOverlay{ padding:var(--ballzInset) var(--ballzInset) 0 !important; }
+body.ballzOpen .gameShell{
+  background:var(--railCoverSolid, #0b0b12) !important;
+  transition:width .26s ease, height .26s ease;
+}
 
 /* Theatre = tighter spacing with the same shell visible */
 </style>
@@ -22902,11 +22913,20 @@ body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .gameOverlay{ padding:va
       var app = byId('app');
       var leftCollapsed = !!(app && app.classList.contains('left-collapsed'));
       var rightCollapsed = !!(app && app.classList.contains('right-collapsed'));
-      if(leftCollapsed !== rightCollapsed){
-        var sharedPad = Math.max(lsW, rsW);
+
+      var rootStyles = getComputedStyle(document.documentElement);
+      var baseLeft = parseFloat(rootStyles.getPropertyValue('--ballzBaseLeft')) || 260;
+      var baseRight = parseFloat(rootStyles.getPropertyValue('--ballzBaseRight')) || 320;
+
+      if(leftCollapsed && rightCollapsed){
+        lsW = baseLeft;
+        rsW = baseRight;
+      }else if(leftCollapsed !== rightCollapsed){
+        var sharedPad = Math.max(lsW, rsW, baseLeft, baseRight);
         lsW = sharedPad;
         rsW = sharedPad;
       }
+
       document.documentElement.style.setProperty('--ballzLeft', lsW + 'px');
       document.documentElement.style.setProperty('--ballzRight', rsW + 'px');
       document.documentElement.style.setProperty('--ballzTop', topH + 'px');
