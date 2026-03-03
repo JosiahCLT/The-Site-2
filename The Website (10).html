@@ -4020,6 +4020,17 @@ body.ballzOpen .gameOverlay{align-items:stretch;justify-content:center}
   display:block;
   background:#060912;
 }
+/* Routed in-page game shell (no overlay/modal) */
+.routeGameShell{display:flex;flex-direction:column;gap:12px;width:100%;}
+.routeGameControls{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border:1px solid var(--stroke);border-radius:14px;background:color-mix(in srgb, var(--panel2) 78%, transparent);}
+.routeGameTitle{font-weight:1100}
+.routeGameBtns{display:flex;gap:8px}
+.routeGameStage{position:relative;width:100%;min-height:clamp(460px,68vh,860px);border:1px solid var(--stroke);border-radius:14px;overflow:hidden;background:#05070d;}
+.routeGameStage .gameFrame{position:absolute;inset:0}
+.routeGameShell.theatre .routeGameStage{min-height:clamp(560px,78vh,980px);}
+.routeFeed{display:grid;gap:10px;grid-template-columns:1fr;}
+@media (min-width:1100px){.routeFeed{grid-template-columns:1fr 1fr 1fr;}}
+.routeFeed .panel{padding:12px;border-radius:14px;border:1px solid var(--stroke);background:color-mix(in srgb, var(--panel) 85%, transparent);}
 .playerBottomBar{
   height:62px;
   display:flex;
@@ -22958,145 +22969,135 @@ body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .gameOverlay{ padding:va
     }catch(e){}
   }
 
-  function openBallz(){
-    if(!overlay || !frame || !tpl) return;
+  var scrollHost = byId('scroll');
+  var homeRoot = scrollHost ? scrollHost.querySelector('.scrollInner') : null;
+  var gameRoot = null;
+  var gameFrame = null;
+  var originalBallzUrl = '';
 
-    measure();
-
-    overlay.classList.add('show');
-    overlay.setAttribute('aria-hidden','false');
-    document.body.classList.add('ballzOpen');
-    syncBallzRoute(true);
-
-    try{ frame.srcdoc = tpl.innerHTML; }catch(e){}
-    frame.onload = function(){ postInitBalances(); };
+  function slugify(v){
+    return String(v||'game').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'') || 'game';
   }
-
+  function getBallzLaunchUrl(){
+    if(originalBallzUrl) return originalBallzUrl;
+    try{
+      var html = tpl ? tpl.innerHTML : '<!doctype html><html><body style="margin:0;background:#05070d;color:#fff;display:grid;place-items:center">Ballz unavailable</body></html>';
+      originalBallzUrl = URL.createObjectURL(new Blob([html], {type:'text/html'}));
+      return originalBallzUrl;
+    }catch(e){ return 'about:blank'; }
+  }
+  function defaultProviderUrl(meta){
+    var id = encodeURIComponent(meta && meta.id ? meta.id : 'provider-game');
+    return 'https://example.com/launch/' + id;
+  }
+  function getRouteMeta(){
+    var m = String(window.location.pathname||'').match(/\/play\/(provider|original)\/([^/?#]+)/i);
+    if(!m) return null;
+    var type = m[1].toLowerCase();
+    var id = decodeURIComponent(m[2]);
+    var st = history.state && history.state.cltGame ? history.state.cltGame : {};
+    return {
+      type:type,
+      id:id,
+      title: st.title || (id === 'ballz' ? 'Ballz' : id.replace(/-/g,' ')),
+      launchUrl: st.launchUrl || (type === 'original' ? getBallzLaunchUrl() : defaultProviderUrl({id:id}))
+    };
+  }
+  function ensureGameShell(meta){
+    if(!scrollHost) return null;
+    if(!gameRoot){
+      gameRoot = document.createElement('div');
+      gameRoot.className = 'scrollInner';
+      gameRoot.id = 'routeGameRoot';
+      gameRoot.innerHTML = '<section class="routeGameShell" id="routeGameShell">'
+        + '<div class="routeGameControls"><div class="routeGameTitle" id="routeGameTitle">Game</div><div class="routeGameBtns">'
+        + '<button class="btn" id="routeTheatreBtn" type="button">Theatre</button>'
+        + '<button class="btn" id="routeFullscreenBtn" type="button">Fullscreen</button>'
+        + '</div></div>'
+        + '<div class="routeGameStage" id="routeGameStage"><iframe class="gameFrame" id="routeGameFrame" title="Game" allow="fullscreen" allowfullscreen></iframe></div>'
+        + '<div class="routeFeed">'
+        + '<section class="panel"><h3>Recommended</h3><p>Suggested games based on this title.</p></section>'
+        + '<section class="panel"><h3>Latest</h3><p>Newly added releases and updates.</p></section>'
+        + '<section class="panel"><h3>Wagers</h3><p>Open challenges tied to this game.</p></section>'
+        + '</div></section>';
+      gameFrame = gameRoot.querySelector('#routeGameFrame');
+      var theatreBtn = gameRoot.querySelector('#routeTheatreBtn');
+      theatreBtn && theatreBtn.addEventListener('click', function(){
+        var shellEl = gameRoot.querySelector('#routeGameShell');
+        shellEl.classList.toggle('theatre');
+        theatreBtn.classList.toggle('active', shellEl.classList.contains('theatre'));
+      });
+      var fullBtn = gameRoot.querySelector('#routeFullscreenBtn');
+      fullBtn && fullBtn.addEventListener('click', async function(){
+        var stage = gameRoot.querySelector('#routeGameStage');
+        if(!stage) return;
+        var doc = document;
+        var isFull = !!(doc.fullscreenElement || doc.webkitFullscreenElement || doc.mozFullScreenElement || doc.msFullscreenElement);
+        if(!isFull){
+          var req = stage.requestFullscreen || stage.webkitRequestFullscreen || stage.mozRequestFullScreen || stage.msRequestFullscreen;
+          if(req){ try{ await req.call(stage); }catch(err){ toastSafe('⚠️','Fullscreen blocked'); } }
+        }else{
+          var ex = doc.exitFullscreen || doc.webkitExitFullscreen || doc.mozCancelFullScreen || doc.msExitFullscreen;
+          if(ex){ try{ await ex.call(doc); }catch(err){} }
+        }
+      });
+    }
+    var titleEl = gameRoot.querySelector('#routeGameTitle');
+    if(titleEl) titleEl.textContent = meta.title || 'Game';
+    if(gameFrame){
+      gameFrame.srcdoc = '';
+      gameFrame.src = meta.launchUrl || 'about:blank';
+      gameFrame.title = meta.title || 'Game';
+    }
+    return gameRoot;
+  }
+  function mountHome(){
+    if(!scrollHost || !homeRoot) return;
+    if(gameRoot && gameRoot.parentNode === scrollHost) scrollHost.removeChild(gameRoot);
+    if(homeRoot.parentNode !== scrollHost) scrollHost.appendChild(homeRoot);
+  }
+  function mountGame(meta){
+    if(!scrollHost || !homeRoot) return;
+    if(homeRoot.parentNode === scrollHost) scrollHost.removeChild(homeRoot);
+    var node = ensureGameShell(meta);
+    if(node && node.parentNode !== scrollHost) scrollHost.appendChild(node);
+  }
+  function renderGameRoute(){
+    var meta = getRouteMeta();
+    if(!meta){ mountHome(); return; }
+    mountGame(meta);
+  }
+  function navigateToGame(meta){
+    if(!meta) return;
+    try{ history.pushState({cltGame:meta}, '', '/play/' + meta.type + '/' + meta.id); }catch(e){ return; }
+    renderGameRoute();
+  }
+  function openBallz(){
+    navigateToGame({type:'original', id:'ballz', title:'Ballz', launchUrl:getBallzLaunchUrl()});
+  }
   function closeBallz(){
-    if(!overlay || !frame) return;
-
-    overlay.classList.remove('show');
-    overlay.setAttribute('aria-hidden','true');
-    document.body.classList.remove('ballzOpen');
-    document.body.classList.remove('ballzTheatre');
-    document.body.classList.remove('ballzFullscreen');
-    if(btnTheatre) btnTheatre.classList.remove('active');
-    syncBallzRoute(false);
-
-    try{ frame.srcdoc = ''; }catch(e){}
-    measure();
+    try{ history.pushState({}, '', '/'); }catch(e){}
+    renderGameRoute();
   }
 
   window.launchBallz = openBallz;
   window.closeBallz = closeBallz;
   initPlayerDetails();
 
-  if(btnClose){
-    btnClose.addEventListener('click', function(e){
-      e.preventDefault();
-      closeBallz();
-    });
-  }
-
-  if(overlay){
-    overlay.addEventListener('click', function(e){
-      // click outside shell closes
-      if(e.target === overlay) closeBallz();
-    });
-  }
-
-  document.addEventListener('keydown', function(e){
-    if(e.key === 'Escape' && document.body.classList.contains('ballzOpen')){
-      closeBallz();
-    }
-  });
-
-  var leftSidebar = byId('leftSidebar');
-  if(leftSidebar){
-    leftSidebar.addEventListener('click', function(e){
-      var navHit = e.target && e.target.closest ? e.target.closest('.navBtn') : null;
-      if(navHit && document.body.classList.contains('ballzOpen')) closeBallz();
-    });
-  }
-
-  // theatre mode (hide chat panel, widen player)
-  function setTheatre(on){
-    document.body.classList.toggle('ballzTheatre', !!on);
-    if(btnTheatre) btnTheatre.classList.toggle('active', !!on);
-  }
-  if(btnTheatre){
-    btnTheatre.addEventListener('click', function(e){
-      e.preventDefault(); e.stopPropagation();
-      setTheatre(!document.body.classList.contains('ballzTheatre'));
-    });
-  }
-
-  // fullscreen (real browser fullscreen)
-  async function toggleFullscreen(){
-    if(!shell) return;
-
-    var doc = document;
-    var isFull = doc.fullscreenElement || doc.webkitFullscreenElement || doc.mozFullScreenElement || doc.msFullscreenElement;
-
-    if(!isFull){
-      var req = shell.requestFullscreen || shell.webkitRequestFullscreen || shell.mozRequestFullScreen || shell.msRequestFullscreen;
-      if(req){
-        try{ await req.call(shell); }
-        catch(err){ toastSafe('⚠️','Fullscreen blocked'); }
-      }else{
-        toastSafe('⚠️','Fullscreen not supported');
-      }
-    }else{
-      var exit = doc.exitFullscreen || doc.webkitExitFullscreen || doc.mozCancelFullScreen || doc.msExitFullscreen;
-      if(exit){ try{ await exit.call(doc); }catch(err){} }
-    }
-  }
-
-  if(btnFull){
-    btnFull.addEventListener('click', function(e){
-      e.preventDefault(); e.stopPropagation();
-      toggleFullscreen();
-    });
-  }
-
-  function syncFullActive(){
-    try{
-      var doc = document;
-      var active = !!(doc.fullscreenElement || doc.webkitFullscreenElement || doc.mozFullScreenElement || doc.msFullscreenElement);
-      if(btnFull) btnFull.classList.toggle('active', active);
-      if(active) document.body.classList.add('ballzFullscreen');
-      else document.body.classList.remove('ballzFullscreen');
-    }catch(e){}
-  }
-  document.addEventListener('fullscreenchange', syncFullActive);
-  document.addEventListener('webkitfullscreenchange', syncFullActive);
-  document.addEventListener('mozfullscreenchange', syncFullActive);
-  document.addEventListener('MSFullscreenChange', syncFullActive);
-
-  // click-to-launch: capture so other handlers don't steal it
   function tryLaunchFromTarget(t){
     if(!t || !t.closest) return false;
-    var hit = t.closest('.tile.isBallz, .tile[data-name="Ballz"], [data-name="Ballz"], .ballzPoster, #btnLaunchBallz');
-    if(!hit) return false;
-    openBallz();
+    if(t.closest('#btnLaunchBallz')){ openBallz(); return true; }
+    var tile = t.closest('.tile');
+    if(!tile) return false;
+    var name = tile.getAttribute('data-name') || tile.querySelector('.name')?.textContent || 'Game';
+    var isBallz = /ballz/i.test(String(name||'')) || tile.classList.contains('isBallz');
+    if(isBallz){ openBallz(); return true; }
+    var provider = tile.getAttribute('data-provider') || 'Provider';
+    var id = slugify(name + '-' + provider);
+    navigateToGame({type:'provider', id:id, title:String(name), launchUrl:defaultProviderUrl({id:id})});
     return true;
   }
 
-  window.addEventListener('pointerdown', function(e){
-    if(tryLaunchFromTarget(e.target)){
-      e.preventDefault();
-      e.stopPropagation();
-    }
-  }, true);
-
-  window.addEventListener('click', function(e){
-    if(tryLaunchFromTarget(e.target)){
-      e.preventDefault();
-      e.stopPropagation();
-    }
-  }, true);
-
-  // Create-wager bridge from the embedded game
   function initials(name){
     var s = String(name||'').replace(/^@/,'').trim();
     return (s.slice(0,2) || '??').toUpperCase();
@@ -23205,25 +23206,25 @@ body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .gameOverlay{ padding:va
 
   // keep sizing synced for collapses / panel width changes
   window.addEventListener('resize', function(){
-    if(document.body.classList.contains('ballzOpen')) measure();
+    measure();
   });
 
   var collapseLeftBtn = byId('collapseLeftBtn');
   var collapseRightBtn = byId('collapseRightBtn');
   if(collapseLeftBtn){
     collapseLeftBtn.addEventListener('click', function(){
-      if(document.body.classList.contains('ballzOpen')) requestAnimationFrame(measure);
+      requestAnimationFrame(measure);
     });
   }
   if(collapseRightBtn){
     collapseRightBtn.addEventListener('click', function(){
-      if(document.body.classList.contains('ballzOpen')) requestAnimationFrame(measure);
+      requestAnimationFrame(measure);
     });
   }
 
   try{
     var ro = new ResizeObserver(function(){
-      if(document.body.classList.contains('ballzOpen')) measure();
+      measure();
     });
     var topBar = document.querySelector('.top');
     if(topBar) ro.observe(topBar);
@@ -23234,14 +23235,11 @@ body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .gameOverlay{ padding:va
   }catch(e){}
 
   window.addEventListener('popstate', function(){
-    if(window.location.hash === '#game/ballz') openBallz();
-    else if(document.body.classList.contains('ballzOpen')) closeBallz();
+    renderGameRoute();
   });
 
-  // initial measure so offsets are correct even before first open
   measure();
-
-  if(window.location.hash === '#game/ballz') openBallz();
+  renderGameRoute();
 })();
 </script>
 
