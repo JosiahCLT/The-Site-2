@@ -3980,7 +3980,7 @@ body:before{display:block !important;}
   box-sizing:border-box;
 }
 .gameOverlay.show{display:flex}
-body.ballzOpen .gameOverlay{align-items:stretch;justify-content:flex-start}
+body.ballzOpen .gameOverlay{align-items:stretch;justify-content:center}
 
 .gameShell{
   width:min(100%, var(--ballzTheatreWidth, calc(100vw - 580px)), 1360px);
@@ -22922,14 +22922,8 @@ body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .gameOverlay{ padding:va
       var lsW = ls ? Math.round(ls.getBoundingClientRect().width) : 0;
       var rsW = rs ? Math.round(rs.getBoundingClientRect().width) : 0;
       var topH = top ? Math.round(top.getBoundingClientRect().height) : 0;
-      var app = byId('app');
-      var leftCollapsed = !!(app && app.classList.contains('left-collapsed'));
-      var rightCollapsed = !!(app && app.classList.contains('right-collapsed'));
-      if(leftCollapsed !== rightCollapsed){
-        var sharedPad = Math.max(lsW, rsW);
-        lsW = sharedPad;
-        rsW = sharedPad;
-      }
+      /* Use true live panel widths so the player stays geometrically centered
+         inside the actual remaining viewport space. */
       document.documentElement.style.setProperty('--ballzLeft', lsW + 'px');
       document.documentElement.style.setProperty('--ballzRight', rsW + 'px');
       document.documentElement.style.setProperty('--ballzTop', topH + 'px');
