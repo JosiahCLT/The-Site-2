@@ -9,6 +9,9 @@
 --pad:14px;
 --gap:14px;
 --rightColW:320px;
+--layoutLeftW:0px;
+--layoutRightW:0px;
+--gamesCenterShift:0px;
 /* EXACT poster placeholder size: 129.5 × 173.72 */
 --posterW:123px;
 --posterH:173.72px;
@@ -440,6 +443,12 @@ gap:14px;
 scrollbar-gutter: stable;
 }
 .scrollInner{width:100%;max-width:var(--contentW);margin:0 auto;}
+.scrollInner,
+.centerBound,
+.gridView,
+.lobbyTopGrid{
+transform:translateX(var(--gamesCenterShift));
+}
 .scrollInner > *{width:100%;}
 .centerBound{width:100%;margin:0 auto;max-width:var(--contentW);--railPad:0px;}
 .gridView{width:100%;max-width:var(--contentW);margin:0 auto;}
@@ -8967,16 +8976,34 @@ closeBalMenu();
 });
 /* ---------- Collapse sidebar / right rail ---------- */
 const app = $('#app');
+const rootStyle = document.documentElement.style;
+function syncGamesCentering(){
+const leftW = $('#leftSidebar')?.getBoundingClientRect().width || 0;
+const rightW = app?.classList.contains('right-collapsed') ? 0 : ($('#todayPanel')?.getBoundingClientRect().width || 0);
+const shift = (rightW - leftW) / 2;
+rootStyle.setProperty('--layoutLeftW', `${Math.round(leftW)}px`);
+rootStyle.setProperty('--layoutRightW', `${Math.round(rightW)}px`);
+rootStyle.setProperty('--gamesCenterShift', `${Math.round(shift)}px`);
+}
 $('#collapseLeftBtn')?.addEventListener('click', ()=>{
 app?.classList.toggle('left-collapsed');
 toast('🧱', app?.classList.contains('left-collapsed') ? 'Sidebar collapsed' : 'Sidebar expanded');
+requestAnimationFrame(syncGamesCentering);
 render();
 });
 $('#collapseRightBtn')?.addEventListener('click', ()=>{
 app?.classList.toggle('right-collapsed');
 toast('📊', app?.classList.contains('right-collapsed') ? 'Stats hidden' : 'Stats shown');
+requestAnimationFrame(syncGamesCentering);
 render();
 });
+window.addEventListener('resize', syncGamesCentering);
+try{
+const sideResizeObs = new ResizeObserver(syncGamesCentering);
+$('#leftSidebar') && sideResizeObs.observe($('#leftSidebar'));
+$('#todayPanel') && sideResizeObs.observe($('#todayPanel'));
+}catch{}
+syncGamesCentering();
 // Top-left quick buttons (placeholders for now)
 $('#streakBtn')?.addEventListener('click', ()=> toast('🔥', 'Login streak'));
 $('#dailyBonusBtn')?.addEventListener('click', ()=> toast('🎁', 'Daily bonus'));
