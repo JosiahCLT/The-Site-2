@@ -3973,7 +3973,8 @@ body:before{display:block !important;}
   background:var(--railCoverSolid, #0b0b12);
   pointer-events:auto;
   box-sizing:border-box;
-  transition:left .28s ease, right .28s ease, top .28s ease, padding .28s ease;
+  transition:left .28s ease, right .28s ease, top .28s ease, padding .28s ease, background-color .18s ease;
+  will-change:left, right, top, padding;
 }
 .gameOverlay.show{display:flex}
 body.ballzOpen .gameOverlay{align-items:stretch;justify-content:flex-start}
@@ -22900,7 +22901,8 @@ body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .gameOverlay{ padding:va
 
       var lsW = ls ? Math.round(ls.getBoundingClientRect().width) : 0;
       var rsW = rs ? Math.round(rs.getBoundingClientRect().width) : 0;
-      var topH = top ? Math.round(top.getBoundingClientRect().height) : 0;
+      var topRect = top ? top.getBoundingClientRect() : null;
+      var topInset = topRect ? Math.max(0, Math.round(topRect.top)) : 0;
       var app = byId('app');
       var leftCollapsed = !!(app && app.classList.contains('left-collapsed'));
       var rightCollapsed = !!(app && app.classList.contains('right-collapsed'));
@@ -22909,18 +22911,36 @@ body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .gameOverlay{ padding:va
       var baseLeft = parseInt(rootStyle.getPropertyValue('--ballzBaseLeft'), 10) || 260;
       var baseRight = parseInt(rootStyle.getPropertyValue('--ballzBaseRight'), 10) || 320;
 
-      if(theatreOn && leftCollapsed && rightCollapsed){
-        lsW = baseLeft;
-        rsW = baseRight;
-      }else if(!theatreOn){
-        var sharedPad = Math.max(lsW, rsW);
-        lsW = sharedPad;
-        rsW = sharedPad;
+      if(theatreOn){
+        if(leftCollapsed && rightCollapsed){
+          // Theatre + both collapsed: keep open-menu reserves (not true full-bleed)
+          lsW = baseLeft;
+          rsW = baseRight;
+        }else if(!leftCollapsed && !rightCollapsed){
+          // Theatre + both open: no dead gutters, frame tightly with real menu widths
+          lsW = lsW;
+          rsW = rsW;
+        }else{
+          // Theatre + one side collapsed: keep visual centering by mirroring larger reserve
+          var theatreShared = Math.max(leftCollapsed ? baseLeft : lsW, rightCollapsed ? baseRight : rsW);
+          lsW = theatreShared;
+          rsW = theatreShared;
+        }
+      }else{
+        if(leftCollapsed && rightCollapsed){
+          lsW = 0;
+          rsW = 0;
+        }else if(leftCollapsed !== rightCollapsed){
+          // Standard view with a single open rail: equal dead space on both sides
+          var sharedPad = Math.max(lsW, rsW);
+          lsW = sharedPad;
+          rsW = sharedPad;
+        }
       }
 
       document.documentElement.style.setProperty('--ballzLeft', lsW + 'px');
       document.documentElement.style.setProperty('--ballzRight', rsW + 'px');
-      document.documentElement.style.setProperty('--ballzTop', topH + 'px');
+      document.documentElement.style.setProperty('--ballzTop', topInset + 'px');
     }catch(e){}
   }
 
