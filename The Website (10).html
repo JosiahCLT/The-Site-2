@@ -3970,9 +3970,10 @@ body:before{display:block !important;}
   padding:var(--ballzInset, 34px);
   align-items:center;
   justify-content:center;
-  background:transparent;
+  background:var(--railCoverSolid, #0b0b12);
   pointer-events:auto;
   box-sizing:border-box;
+  transition:left .28s ease, right .28s ease, top .28s ease, padding .28s ease;
 }
 .gameOverlay.show{display:flex}
 body.ballzOpen .gameOverlay{align-items:stretch;justify-content:flex-start}
@@ -3987,6 +3988,7 @@ body.ballzOpen .gameOverlay{align-items:stretch;justify-content:flex-start}
   box-shadow:0 18px 60px rgba(0,0,0,.55);
   display:flex;
   flex-direction:column;
+  transition:width .28s ease, height .28s ease, border-color .28s ease, box-shadow .28s ease;
 }
 .gameShell.theatre{border-radius:0px}
 
@@ -3997,7 +3999,7 @@ body.ballzOpen .gameOverlay{align-items:stretch;justify-content:flex-start}
   display:flex;
   flex-direction:column;
   overflow:auto;
-  background:transparent;
+  background:var(--railCoverSolid, #0b0b12);
 }
 .playerGameStage{
   position:relative;
@@ -4238,7 +4240,7 @@ body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .playerDetails .pdCard:f
   margin-bottom:6px;
 }
 body.ballzTheatre .gameOverlay{padding:0;background:var(--railCoverSolid, #0b0b12)}
-body.ballzTheatre .gameShell{width:min(100%, var(--ballzTheatreWidth, calc(100vw - 580px)), 1360px);height:100%;background:var(--railCoverSolid, #0b0b12)}
+body.ballzTheatre .gameShell{width:100%;max-width:none;height:100%;background:var(--railCoverSolid, #0b0b12)}
 body.ballzTheatre .playerWrap{overflow:auto}
 body.ballzTheatre .playerDetails{display:none}
 body.ballzTheatre .playerGameStage{flex:1 1 auto;height:auto;min-height:0}
@@ -22902,11 +22904,20 @@ body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .gameOverlay{ padding:va
       var app = byId('app');
       var leftCollapsed = !!(app && app.classList.contains('left-collapsed'));
       var rightCollapsed = !!(app && app.classList.contains('right-collapsed'));
-      if(leftCollapsed !== rightCollapsed){
+      var theatreOn = document.body.classList.contains('ballzTheatre');
+      var rootStyle = getComputedStyle(document.documentElement);
+      var baseLeft = parseInt(rootStyle.getPropertyValue('--ballzBaseLeft'), 10) || 260;
+      var baseRight = parseInt(rootStyle.getPropertyValue('--ballzBaseRight'), 10) || 320;
+
+      if(theatreOn && leftCollapsed && rightCollapsed){
+        lsW = baseLeft;
+        rsW = baseRight;
+      }else if(!theatreOn){
         var sharedPad = Math.max(lsW, rsW);
         lsW = sharedPad;
         rsW = sharedPad;
       }
+
       document.documentElement.style.setProperty('--ballzLeft', lsW + 'px');
       document.documentElement.style.setProperty('--ballzRight', rsW + 'px');
       document.documentElement.style.setProperty('--ballzTop', topH + 'px');
@@ -23006,6 +23017,7 @@ body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .gameOverlay{ padding:va
   function setTheatre(on){
     document.body.classList.toggle('ballzTheatre', !!on);
     if(btnTheatre) btnTheatre.classList.toggle('active', !!on);
+    if(document.body.classList.contains('ballzOpen')) requestAnimationFrame(measure);
   }
   if(btnTheatre){
     btnTheatre.addEventListener('click', function(e){
