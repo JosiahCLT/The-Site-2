@@ -22981,7 +22981,9 @@ body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .gameOverlay{ padding:va
     return 'https://example.com/launch/' + id;
   }
   function getRouteMeta(){
-    var m = String(window.location.pathname||'').match(/\/play\/(provider|original)\/([^/?#]+)/i);
+    var path = String(window.location.pathname||'');
+    var hash = String(window.location.hash||'').replace(/^#/, '');
+    var m = path.match(/\/play\/(provider|original)\/([^/?#]+)/i) || hash.match(/^\/?play\/(provider|original)\/([^/?#]+)/i);
     if(!m) return null;
     var type = m[1].toLowerCase();
     var id = decodeURIComponent(m[2]);
@@ -23059,7 +23061,17 @@ body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .gameOverlay{ padding:va
   }
   function navigateToGame(meta){
     if(!meta) return;
-    try{ history.pushState({cltGame:meta}, '', '/play/' + meta.type + '/' + meta.id); }catch(e){ return; }
+    var routePath = '/play/' + meta.type + '/' + meta.id;
+    var routeHash = '#/play/' + meta.type + '/' + meta.id;
+    var pushed = false;
+    try{
+      if(window.location.protocol === 'file:') history.pushState({cltGame:meta}, '', routeHash);
+      else history.pushState({cltGame:meta}, '', routePath);
+      pushed = true;
+    }catch(e){}
+    if(!pushed){
+      try{ window.location.hash = routeHash; pushed = true; }catch(_){ }
+    }
     renderGameRoute();
   }
   function launchGameRoute(it){
@@ -23076,7 +23088,12 @@ body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .gameOverlay{ padding:va
     navigateToGame({type:'original', id:'ballz', title:'Ballz', launchUrl:getBallzLaunchUrl()});
   }
   function closeBallz(){
-    try{ history.pushState({}, '', '/'); }catch(e){}
+    try{
+      if(window.location.protocol === 'file:') history.pushState({}, '', '#/');
+      else history.pushState({}, '', '/');
+    }catch(e){
+      try{ window.location.hash = '#/'; }catch(_){ }
+    }
     renderGameRoute();
   }
 
