@@ -22790,14 +22790,10 @@ body.ballzOpen .gameOverlay{
   left: var(--ballzLeft) !important; 
   right: var(--ballzRight) !important; 
   bottom:0 !important;
-  background:var(--railCoverSolid, #0b0b12) !important;
+  background:var(--bg1) !important;
   transition:left .26s ease, right .26s ease, top .26s ease, padding .26s ease;
 }
 body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .gameOverlay{ padding:var(--ballzInset) var(--ballzInset) 0 !important; }
-body.ballzOpen .gameShell{
-  background:var(--railCoverSolid, #0b0b12) !important;
-  transition:width .26s ease, height .26s ease;
-}
 
 /* Theatre = tighter spacing with the same shell visible */
 </style>
@@ -22922,7 +22918,7 @@ body.ballzOpen .gameShell{
         lsW = baseLeft;
         rsW = baseRight;
       }else if(leftCollapsed !== rightCollapsed){
-        var sharedPad = Math.max(lsW, rsW, baseLeft, baseRight);
+        var sharedPad = Math.max(lsW, rsW);
         lsW = sharedPad;
         rsW = sharedPad;
       }
