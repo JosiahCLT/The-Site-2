@@ -3997,7 +3997,7 @@ body.ballzOpen .gameOverlay{align-items:stretch;justify-content:flex-start}
   display:flex;
   flex-direction:column;
   overflow:auto;
-  background:transparent;
+  background:var(--bg1);
 }
 .playerGameStage{
   position:relative;
@@ -22790,7 +22790,6 @@ body.ballzOpen .gameOverlay{
   left: var(--ballzLeft) !important; 
   right: var(--ballzRight) !important; 
   bottom:0 !important;
-  background:var(--bg1) !important;
   transition:left .26s ease, right .26s ease, top .26s ease, padding .26s ease;
 }
 body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .gameOverlay{ padding:var(--ballzInset) var(--ballzInset) 0 !important; }
@@ -22914,10 +22913,18 @@ body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .gameOverlay{ padding:va
       var baseLeft = parseFloat(rootStyles.getPropertyValue('--ballzBaseLeft')) || 260;
       var baseRight = parseFloat(rootStyles.getPropertyValue('--ballzBaseRight')) || 320;
 
+      var isTheatre = document.body.classList.contains('ballzTheatre');
+
       if(leftCollapsed && rightCollapsed){
         lsW = baseLeft;
         rsW = baseRight;
-      }else if(leftCollapsed !== rightCollapsed){
+      }else if(!leftCollapsed && !rightCollapsed){
+        if(!isTheatre){
+          var sharedOpenPad = Math.max(lsW, rsW);
+          lsW = sharedOpenPad;
+          rsW = sharedOpenPad;
+        }
+      }else{
         var sharedPad = Math.max(lsW, rsW);
         lsW = sharedPad;
         rsW = sharedPad;
@@ -22928,6 +22935,15 @@ body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .gameOverlay{ padding:va
       document.documentElement.style.setProperty('--ballzTop', topH + 'px');
     }catch(e){}
   }
+
+  function scheduleMeasure(){
+    requestAnimationFrame(function(){
+      requestAnimationFrame(measure);
+    });
+    setTimeout(measure, 180);
+  }
+
+  try{ window.__cltBallzMeasure = measure; }catch(e){}
 
   function syncBallzRoute(open){
     try{
@@ -23204,25 +23220,35 @@ body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .gameOverlay{ padding:va
 
   // keep sizing synced for collapses / panel width changes
   window.addEventListener('resize', function(){
-    if(document.body.classList.contains('ballzOpen')) measure();
+    if(document.body.classList.contains('ballzOpen')) scheduleMeasure();
   });
+
+  try{
+    var appNode = byId('app');
+    if(appNode){
+      var appObserver = new MutationObserver(function(){
+        if(document.body.classList.contains('ballzOpen')) scheduleMeasure();
+      });
+      appObserver.observe(appNode, {attributes:true, attributeFilter:['class']});
+    }
+  }catch(e){}
 
   var collapseLeftBtn = byId('collapseLeftBtn');
   var collapseRightBtn = byId('collapseRightBtn');
   if(collapseLeftBtn){
     collapseLeftBtn.addEventListener('click', function(){
-      if(document.body.classList.contains('ballzOpen')) requestAnimationFrame(measure);
+      if(document.body.classList.contains('ballzOpen')) scheduleMeasure();
     });
   }
   if(collapseRightBtn){
     collapseRightBtn.addEventListener('click', function(){
-      if(document.body.classList.contains('ballzOpen')) requestAnimationFrame(measure);
+      if(document.body.classList.contains('ballzOpen')) scheduleMeasure();
     });
   }
 
   try{
     var ro = new ResizeObserver(function(){
-      if(document.body.classList.contains('ballzOpen')) measure();
+      if(document.body.classList.contains('ballzOpen')) scheduleMeasure();
     });
     var topBar = document.querySelector('.top');
     if(topBar) ro.observe(topBar);
