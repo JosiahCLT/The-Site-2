@@ -444,7 +444,11 @@ scrollbar-gutter: stable;
 }
 .scrollInner{width:100%;max-width:var(--contentW);margin:0 auto;}
 /* Shift only the single outer content wrapper to avoid compounding offsets. */
-.scrollInner{transform:translateX(var(--gamesCenterShift));}
+.scrollInner{transform:translateX(var(--gamesCenterShift));transition:transform .24s ease;}
+#routeBallzRoot.scrollInner,
+#routeGameRoot.scrollInner{
+  transform:none !important;
+}
 .scrollInner > *{width:100%;}
 .centerBound{width:100%;margin:0 auto;max-width:var(--contentW);--railPad:0px;}
 .gridView{width:100%;max-width:var(--contentW);margin:0 auto;}
@@ -3995,7 +3999,28 @@ body.ballzOpen .gameOverlay{align-items:stretch;justify-content:center}
 }
 .gameShell.theatre{border-radius:0px}
 /* Routed Ballz view: reuse original game shell in normal document flow */
-.gameShell.routeMounted{width:100%;max-width:none;height:auto;border-radius:0;box-shadow:none;}
+.gameShell.routeMounted{
+  width:min(100%, 1360px);
+  max-width:none;
+  height:auto;
+  margin-inline:auto;
+  border-radius:0;
+  box-shadow:none;
+  transition:width .26s ease, height .26s ease, margin .26s ease;
+}
+/* Theatre mode in routed view */
+.gameShell.routeMounted.theatre{
+  width:100%;
+  height:calc(100dvh - var(--ballzTop));
+}
+.gameShell.routeMounted.theatre .playerWrap{height:100%; overflow:hidden;}
+.gameShell.routeMounted.theatre .playerDetails{display:none;}
+.gameShell.routeMounted.theatre .playerGameStage{flex:1 1 auto;height:auto;min-height:0;}
+/* With both menus collapsed in theatre, keep original open-menu frame width (not full bleed) */
+.app.left-collapsed.right-collapsed .gameShell.routeMounted.theatre{
+  width:min(100%, calc(100vw - 220px - 320px));
+  margin-inline:auto;
+}
 
 .playerWrap{
   position:relative;
@@ -8992,14 +9017,14 @@ closeBalMenu();
 const app = $('#app');
 const rootStyle = document.documentElement.style;
 function syncGamesCentering(){
-const leftW = $('#leftSidebar')?.getBoundingClientRect().width || 0;
-const rightW = app?.classList.contains('right-collapsed') ? 0 : ($('#todayPanel')?.getBoundingClientRect().width || 0);
 const leftCollapsed = !!app?.classList.contains('left-collapsed');
 const rightCollapsed = !!app?.classList.contains('right-collapsed');
-// Keep the normal full-layout baseline unshifted; compensate only when one side is collapsed.
+// Use stable layout targets for menu states so centering does not drift during rapid toggles.
+const leftW = leftCollapsed ? 72 : 220;
+const rightW = rightCollapsed ? 0 : 320;
 const shift = (leftCollapsed !== rightCollapsed) ? ((rightW - leftW) / 2) : 0;
-rootStyle.setProperty('--layoutLeftW', `${Math.round(leftW)}px`);
-rootStyle.setProperty('--layoutRightW', `${Math.round(rightW)}px`);
+rootStyle.setProperty('--layoutLeftW', `${leftW}px`);
+rootStyle.setProperty('--layoutRightW', `${rightW}px`);
 rootStyle.setProperty('--gamesCenterShift', `${Math.round(shift)}px`);
 }
 $('#collapseLeftBtn')?.addEventListener('click', ()=>{
@@ -23061,6 +23086,24 @@ body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .gameOverlay{ padding:va
     }
     return gameRoot;
   }
+  function setRouteMountedTheatre(on){
+    if(!shell) return;
+    shell.classList.toggle('theatre', !!on);
+    if(btnTheatre) btnTheatre.classList.toggle('active', !!on);
+  }
+  async function toggleRouteMountedFullscreen(){
+    if(!shell) return;
+    var doc = document;
+    var isFull = !!(doc.fullscreenElement || doc.webkitFullscreenElement || doc.mozFullScreenElement || doc.msFullscreenElement);
+    if(!isFull){
+      var req = shell.requestFullscreen || shell.webkitRequestFullscreen || shell.mozRequestFullScreen || shell.msRequestFullscreen;
+      if(req){ try{ await req.call(shell); }catch(err){ toastSafe('⚠️','Fullscreen blocked'); } }
+    }else{
+      var ex = doc.exitFullscreen || doc.webkitExitFullscreen || doc.mozCancelFullScreen || doc.msExitFullscreen;
+      if(ex){ try{ await ex.call(doc); }catch(err){} }
+    }
+  }
+
   function ensureBallzRouteShell(meta){
     if(!scrollHost || !shell) return null;
     if(!gameRoot || gameRoot.id !== 'routeBallzRoot'){
@@ -23139,6 +23182,21 @@ body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .gameOverlay{ padding:va
   window.launchBallz = openBallz;
   window.closeBallz = closeBallz;
   initPlayerDetails();
+
+  if(btnTheatre && btnTheatre.dataset.routeBound !== '1'){
+    btnTheatre.dataset.routeBound = '1';
+    btnTheatre.addEventListener('click', function(e){
+      e.preventDefault(); e.stopPropagation();
+      setRouteMountedTheatre(!shell.classList.contains('theatre'));
+    });
+  }
+  if(btnFull && btnFull.dataset.routeBound !== '1'){
+    btnFull.dataset.routeBound = '1';
+    btnFull.addEventListener('click', function(e){
+      e.preventDefault(); e.stopPropagation();
+      toggleRouteMountedFullscreen();
+    });
+  }
 
   var launchBallzBtn = byId('btnLaunchBallz');
   if(launchBallzBtn){
