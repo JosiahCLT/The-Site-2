@@ -4000,7 +4000,7 @@ body.ballzOpen .gameOverlay{align-items:stretch;justify-content:center}
 .gameShell.theatre{border-radius:0px}
 /* Routed Ballz view: reuse original game shell in normal document flow */
 .gameShell.routeMounted{
-  width:min(100%, 1360px);
+  width:100%;
   max-width:none;
   height:auto;
   margin-inline:auto;
@@ -4008,23 +4008,30 @@ body.ballzOpen .gameOverlay{align-items:stretch;justify-content:center}
   box-shadow:none;
   transition:width .26s ease, height .26s ease, margin .26s ease;
 }
-/* Route default: show down to just below the Ballz expander area, with more space before lower cards */
-.gameShell.routeMounted .playerGameStage{height:clamp(560px, 74vh, 980px);}
-.gameShell.routeMounted .playerDetails{padding-top:20px;}
-.gameShell.routeMounted .playerDetails .pdCard:nth-of-type(2){margin-top:24px;}
-/* Theatre mode in routed view */
+/* Route default: slimmer Ballz expander row + larger separation before recommended cards */
+.gameShell.routeMounted .playerGameStage{height:clamp(520px, 67vh, 900px);}
+.gameShell.routeMounted .playerDetails{padding-top:12px;}
+.gameShell.routeMounted .playerDetails .pdCard:first-child{padding:10px 12px;}
+.gameShell.routeMounted .playerDetails .pdCard:first-child .pdHead{margin-bottom:8px;min-height:34px;}
+.gameShell.routeMounted .playerDetails .pdCard:nth-of-type(2){margin-top:64px;}
+/* Theatre mode in routed view: keep scroll to lower sections and fit stage between top bar and bottom controls */
 .gameShell.routeMounted.theatre{
   width:100%;
-  height:calc(100dvh - var(--ballzTop));
+  height:auto;
 }
-.gameShell.routeMounted.theatre .playerWrap{height:100%; overflow:hidden;}
-.gameShell.routeMounted.theatre .playerDetails{display:none;}
-.gameShell.routeMounted.theatre .playerGameStage{flex:1 1 auto;height:auto;min-height:0;}
-/* With both menus collapsed in theatre, keep original open-menu frame width (not full bleed) */
+.gameShell.routeMounted.theatre .playerWrap{height:auto; overflow:auto;}
+.gameShell.routeMounted.theatre .playerDetails{display:block;}
+.gameShell.routeMounted.theatre .playerGameStage{height:calc(100dvh - var(--ballzTop) - 62px);min-height:420px;}
+/* Keep open-menu equivalent frame width when both menus are collapsed (not full bleed) */
+.app.left-collapsed.right-collapsed .gameShell.routeMounted,
 .app.left-collapsed.right-collapsed .gameShell.routeMounted.theatre{
   width:min(100%, calc(100vw - 220px - 320px));
   margin-inline:auto;
 }
+/* Routed game mode should sit flush to menu edges/top (no extra scroll padding gap) */
+body.play-route #scroll{padding:0 0 28px;}
+body.play-route #routeBallzRoot.scrollInner,
+body.play-route #routeGameRoot.scrollInner{max-width:none;width:100%;}
 
 .playerWrap{
   position:relative;
@@ -23141,7 +23148,12 @@ body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .gameOverlay{ padding:va
   }
   function renderGameRoute(){
     var meta = getRouteMeta();
-    if(!meta){ mountHome(); return; }
+    if(!meta){
+      document.body.classList.remove('play-route');
+      mountHome();
+      return;
+    }
+    document.body.classList.add('play-route');
     mountGame(meta);
   }
   function navigateToGame(meta){
