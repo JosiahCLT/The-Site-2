@@ -4009,11 +4009,11 @@ body.ballzOpen .gameOverlay{align-items:stretch;justify-content:center}
   transition:width .26s ease, height .26s ease, margin .26s ease;
 }
 /* Route default: slimmer Ballz expander row + larger separation before recommended cards */
-.gameShell.routeMounted .playerGameStage{height:clamp(520px, 67vh, 900px);}
+.gameShell.routeMounted .playerGameStage{height:clamp(500px, 64vh, 860px);}
 .gameShell.routeMounted .playerDetails{padding-top:12px;}
 .gameShell.routeMounted .playerDetails .pdCard:first-child{padding:10px 12px;}
 .gameShell.routeMounted .playerDetails .pdCard:first-child .pdHead{margin-bottom:8px;min-height:34px;}
-.gameShell.routeMounted .playerDetails .pdCard:nth-of-type(2){margin-top:64px;}
+.gameShell.routeMounted .playerDetails .pdCard:nth-of-type(2){margin-top:170px;}
 /* Theatre mode in routed view: keep scroll to lower sections and fit stage between top bar and bottom controls */
 .gameShell.routeMounted.theatre{
   width:100%;
@@ -23115,6 +23115,22 @@ body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .gameOverlay{ padding:va
     }
   }
 
+  function syncRouteMountedShellLayout(){
+    if(!shell || !shell.classList.contains('routeMounted')) return;
+    var appEl = byId('app');
+    var mainEl = document.querySelector('.app > .panel.main');
+    if(!appEl || !mainEl) return;
+    var leftCollapsed = appEl.classList.contains('left-collapsed');
+    var rightCollapsed = appEl.classList.contains('right-collapsed');
+    var mainW = Math.round(mainEl.getBoundingClientRect().width || 0);
+    if(mainW <= 0) return;
+    var openEquivalent = mainW - (leftCollapsed ? (220 - 72) : 0) - (rightCollapsed ? 320 : 0);
+    var widthPx = Math.max(720, openEquivalent);
+    shell.style.width = widthPx + 'px';
+    shell.style.maxWidth = '100%';
+    shell.style.marginInline = 'auto';
+  }
+
   function ensureBallzRouteShell(meta){
     if(!scrollHost || !shell) return null;
     if(!gameRoot || gameRoot.id !== 'routeBallzRoot'){
@@ -23131,13 +23147,19 @@ body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .gameOverlay{ padding:va
       frame.srcdoc = meta.launchHtml || getBallzLaunchHtml();
       frame.onload = function(){ postInitBalances(); };
     }
+    requestAnimationFrame(syncRouteMountedShellLayout);
     return gameRoot;
   }
   function mountHome(){
     if(!scrollHost || !homeRoot) return;
     if(gameRoot && gameRoot.parentNode === scrollHost) scrollHost.removeChild(gameRoot);
     if(shell && overlay && shell.parentNode !== overlay) overlay.appendChild(shell);
-    if(shell) shell.classList.remove('routeMounted');
+    if(shell){
+      shell.classList.remove('routeMounted');
+      shell.style.removeProperty('width');
+      shell.style.removeProperty('max-width');
+      shell.style.removeProperty('margin-inline');
+    }
     if(homeRoot.parentNode !== scrollHost) scrollHost.appendChild(homeRoot);
   }
   function mountGame(meta){
@@ -23155,6 +23177,7 @@ body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .gameOverlay{ padding:va
     }
     document.body.classList.add('play-route');
     mountGame(meta);
+    requestAnimationFrame(syncRouteMountedShellLayout);
   }
   function navigateToGame(meta){
     if(!meta) return;
@@ -23204,6 +23227,7 @@ body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .gameOverlay{ padding:va
     btnTheatre.addEventListener('click', function(e){
       e.preventDefault(); e.stopPropagation();
       setRouteMountedTheatre(!shell.classList.contains('theatre'));
+      requestAnimationFrame(syncRouteMountedShellLayout);
     });
   }
   if(btnFull && btnFull.dataset.routeBound !== '1'){
@@ -23345,24 +23369,26 @@ body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .gameOverlay{ padding:va
   // keep sizing synced for collapses / panel width changes
   window.addEventListener('resize', function(){
     measure();
+    requestAnimationFrame(syncRouteMountedShellLayout);
   });
 
   var collapseLeftBtn = byId('collapseLeftBtn');
   var collapseRightBtn = byId('collapseRightBtn');
   if(collapseLeftBtn){
     collapseLeftBtn.addEventListener('click', function(){
-      requestAnimationFrame(measure);
+      requestAnimationFrame(function(){ measure(); syncRouteMountedShellLayout(); });
     });
   }
   if(collapseRightBtn){
     collapseRightBtn.addEventListener('click', function(){
-      requestAnimationFrame(measure);
+      requestAnimationFrame(function(){ measure(); syncRouteMountedShellLayout(); });
     });
   }
 
   try{
     var ro = new ResizeObserver(function(){
       measure();
+      syncRouteMountedShellLayout();
     });
     var topBar = document.querySelector('.top');
     if(topBar) ro.observe(topBar);
