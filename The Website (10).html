@@ -8994,7 +8994,10 @@ const rootStyle = document.documentElement.style;
 function syncGamesCentering(){
 const leftW = $('#leftSidebar')?.getBoundingClientRect().width || 0;
 const rightW = app?.classList.contains('right-collapsed') ? 0 : ($('#todayPanel')?.getBoundingClientRect().width || 0);
-const shift = (rightW - leftW) / 2;
+const leftCollapsed = !!app?.classList.contains('left-collapsed');
+const rightCollapsed = !!app?.classList.contains('right-collapsed');
+// Keep the normal full-layout baseline unshifted; compensate only when one side is collapsed.
+const shift = (leftCollapsed !== rightCollapsed) ? ((rightW - leftW) / 2) : 0;
 rootStyle.setProperty('--layoutLeftW', `${Math.round(leftW)}px`);
 rootStyle.setProperty('--layoutRightW', `${Math.round(rightW)}px`);
 rootStyle.setProperty('--gamesCenterShift', `${Math.round(shift)}px`);
