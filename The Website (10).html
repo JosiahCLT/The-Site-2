@@ -4022,10 +4022,13 @@ body.ballzOpen .gameOverlay{align-items:stretch;justify-content:center}
 }
 /* Routed in-page game shell (no overlay/modal) */
 .routeGameShell{display:flex;flex-direction:column;gap:12px;width:100%;}
+.routeGameShell.ballzRoute{gap:0;}
 .routeGameControls{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border:1px solid var(--stroke);border-radius:14px;background:color-mix(in srgb, var(--panel2) 78%, transparent);}
+.routeGameControls[hidden]{display:none !important;}
 .routeGameTitle{font-weight:1100}
 .routeGameBtns{display:flex;gap:8px}
 .routeGameStage{position:relative;width:100%;min-height:clamp(460px,68vh,860px);border:1px solid var(--stroke);border-radius:14px;overflow:hidden;background:#05070d;}
+.routeGameShell.ballzRoute .routeGameStage{border-radius:0;min-height:clamp(560px,76vh,980px);}
 .routeGameStage .gameFrame{position:absolute;inset:0}
 .routeGameShell.theatre .routeGameStage{min-height:clamp(560px,78vh,980px);}
 .routeFeed{display:grid;gap:10px;grid-template-columns:1fr;}
@@ -23036,6 +23039,11 @@ body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .gameOverlay{ padding:va
     }
     var titleEl = gameRoot.querySelector('#routeGameTitle');
     if(titleEl) titleEl.textContent = meta.title || 'Game';
+    var controlsEl = gameRoot.querySelector('.routeGameControls');
+    var shellNode = gameRoot.querySelector('#routeGameShell');
+    var isBallzRoute = (meta && meta.type === 'original' && String(meta.id||'').toLowerCase() === 'ballz');
+    if(controlsEl) controlsEl.hidden = !!isBallzRoute;
+    if(shellNode) shellNode.classList.toggle('ballzRoute', !!isBallzRoute);
     if(gameFrame){
       if(meta.launchHtml){
         gameFrame.removeAttribute('src');
