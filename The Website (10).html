@@ -9,6 +9,9 @@
 --pad:14px;
 --gap:14px;
 --rightColW:320px;
+--layoutLeftW:0px;
+--layoutRightW:0px;
+--gamesCenterShift:0px;
 /* EXACT poster placeholder size: 129.5 × 173.72 */
 --posterW:123px;
 --posterH:173.72px;
@@ -440,6 +443,8 @@ gap:14px;
 scrollbar-gutter: stable;
 }
 .scrollInner{width:100%;max-width:var(--contentW);margin:0 auto;}
+/* Shift only the single outer content wrapper to avoid compounding offsets. */
+.scrollInner{transform:translateX(var(--gamesCenterShift));}
 .scrollInner > *{width:100%;}
 .centerBound{width:100%;margin:0 auto;max-width:var(--contentW);--railPad:0px;}
 .gridView{width:100%;max-width:var(--contentW);margin:0 auto;}
@@ -3975,7 +3980,7 @@ body:before{display:block !important;}
   box-sizing:border-box;
 }
 .gameOverlay.show{display:flex}
-body.ballzOpen .gameOverlay{align-items:stretch;justify-content:flex-start}
+body.ballzOpen .gameOverlay{align-items:stretch;justify-content:center}
 
 .gameShell{
   width:min(100%, var(--ballzTheatreWidth, calc(100vw - 580px)), 1360px);
@@ -3989,6 +3994,8 @@ body.ballzOpen .gameOverlay{align-items:stretch;justify-content:flex-start}
   flex-direction:column;
 }
 .gameShell.theatre{border-radius:0px}
+/* Routed Ballz view: reuse original game shell in normal document flow */
+.gameShell.routeMounted{width:100%;max-width:none;height:auto;border-radius:0;box-shadow:none;}
 
 .playerWrap{
   position:relative;
@@ -4015,6 +4022,20 @@ body.ballzOpen .gameOverlay{align-items:stretch;justify-content:flex-start}
   display:block;
   background:#060912;
 }
+/* Routed in-page game shell (no overlay/modal) */
+.routeGameShell{display:flex;flex-direction:column;gap:12px;width:100%;}
+.routeGameShell.ballzRoute{gap:0;}
+.routeGameControls{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border:1px solid var(--stroke);border-radius:14px;background:color-mix(in srgb, var(--panel2) 78%, transparent);}
+.routeGameControls[hidden]{display:none !important;}
+.routeGameTitle{font-weight:1100}
+.routeGameBtns{display:flex;gap:8px}
+.routeGameStage{position:relative;width:100%;min-height:clamp(460px,68vh,860px);border:1px solid var(--stroke);border-radius:14px;overflow:hidden;background:#05070d;}
+.routeGameShell.ballzRoute .routeGameStage{border-radius:0;min-height:clamp(560px,76vh,980px);}
+.routeGameStage .gameFrame{position:absolute;inset:0}
+.routeGameShell.theatre .routeGameStage{min-height:clamp(560px,78vh,980px);}
+.routeFeed{display:grid;gap:10px;grid-template-columns:1fr;}
+@media (min-width:1100px){.routeFeed{grid-template-columns:1fr 1fr 1fr;}}
+.routeFeed .panel{padding:12px;border-radius:14px;border:1px solid var(--stroke);background:color-mix(in srgb, var(--panel) 85%, transparent);}
 .playerBottomBar{
   height:62px;
   display:flex;
@@ -6206,7 +6227,9 @@ html.opaque-menus .poster .cornerTag{
   z-index:2;
   text-align:center;
   padding:12px;
+  pointer-events:none;
 }
+.tile .overlay{ z-index:3; }
 .ballzBalls{ display:flex; gap:10px; margin-bottom:2px; }
 .ballzBalls i{
   width:14px;height:14px;border-radius:50%;
@@ -8967,16 +8990,34 @@ closeBalMenu();
 });
 /* ---------- Collapse sidebar / right rail ---------- */
 const app = $('#app');
+const rootStyle = document.documentElement.style;
+function syncGamesCentering(){
+const leftW = $('#leftSidebar')?.getBoundingClientRect().width || 0;
+const rightW = app?.classList.contains('right-collapsed') ? 0 : ($('#todayPanel')?.getBoundingClientRect().width || 0);
+const shift = (rightW - leftW) / 2;
+rootStyle.setProperty('--layoutLeftW', `${Math.round(leftW)}px`);
+rootStyle.setProperty('--layoutRightW', `${Math.round(rightW)}px`);
+rootStyle.setProperty('--gamesCenterShift', `${Math.round(shift)}px`);
+}
 $('#collapseLeftBtn')?.addEventListener('click', ()=>{
 app?.classList.toggle('left-collapsed');
 toast('🧱', app?.classList.contains('left-collapsed') ? 'Sidebar collapsed' : 'Sidebar expanded');
+requestAnimationFrame(syncGamesCentering);
 render();
 });
 $('#collapseRightBtn')?.addEventListener('click', ()=>{
 app?.classList.toggle('right-collapsed');
 toast('📊', app?.classList.contains('right-collapsed') ? 'Stats hidden' : 'Stats shown');
+requestAnimationFrame(syncGamesCentering);
 render();
 });
+window.addEventListener('resize', syncGamesCentering);
+try{
+const sideResizeObs = new ResizeObserver(syncGamesCentering);
+$('#leftSidebar') && sideResizeObs.observe($('#leftSidebar'));
+$('#todayPanel') && sideResizeObs.observe($('#todayPanel'));
+}catch{}
+syncGamesCentering();
 // Top-left quick buttons (placeholders for now)
 $('#streakBtn')?.addEventListener('click', ()=> toast('🔥', 'Login streak'));
 $('#dailyBonusBtn')?.addEventListener('click', ()=> toast('🎁', 'Daily bonus'));
@@ -9245,31 +9286,25 @@ poster.style.setProperty('--my', my.toFixed(1) + '%');
 
 tile.querySelector('.playPill')?.addEventListener('click', (e)=>{
 e.stopPropagation();
-if(String(it.name||'') === 'Ballz'){
-  try{
-    (window.launchBallz ? window.launchBallz() : document.getElementById('btnLaunchBallz')?.click());
-  }catch(err){}
-  try{ addUserSession(it.name); }catch(_){}
-  try{ addUserBet(it.name); }catch(_){}
-  return;
-}
-toast('▶️', 'Play: ' + it.name);
-addUserSession(it.name);
-addUserBet(it.name);
+try{
+  if(window.launchGameRoute) window.launchGameRoute(it);
+  else if(window.launchBallz && String(it.name||'') === 'Ballz') window.launchBallz();
+  else toast('▶️', 'Play: ' + it.name);
+}catch(err){}
+try{ addUserSession(it.name); }catch(_){}
+try{ addUserBet(it.name); }catch(_){}
 });
 
 tile.addEventListener('click', ()=>{
-if(String(it.name||'') === 'Ballz'){
-  try{
-    (window.launchBallz ? window.launchBallz() : document.getElementById('btnLaunchBallz')?.click());
-  }catch(err){}
-  try{ addUserSession(it.name); }catch(_){}
-  try{ addUserBet(it.name); }catch(_){}
-  return;
-}
 document.querySelectorAll('.tile.selected').forEach(t=>t.classList.remove('selected'));
 tile.classList.add('selected');
-toast('🎮', it.name);
+try{
+  if(window.launchGameRoute) window.launchGameRoute(it);
+  else if(window.launchBallz && String(it.name||'') === 'Ballz') window.launchBallz();
+  else toast('🎮', it.name);
+}catch(err){}
+try{ addUserSession(it.name); }catch(_){}
+try{ addUserBet(it.name); }catch(_){}
 });
 car.appendChild(tile);
 });
@@ -10989,31 +11024,25 @@ poster.style.setProperty('--my', my.toFixed(1) + '%');
 
 tile.querySelector('.playPill')?.addEventListener('click', (e)=>{
 e.stopPropagation();
-if(String(it.name||'') === 'Ballz'){
-  try{
-    (window.launchBallz ? window.launchBallz() : document.getElementById('btnLaunchBallz')?.click());
-  }catch(err){}
-  try{ addUserSession(it.name); }catch(_){}
-  try{ addUserBet(it.name); }catch(_){}
-  return;
-}
-toast('▶️', 'Play: ' + it.name);
-addUserSession(it.name);
-addUserBet(it.name);
+try{
+  if(window.launchGameRoute) window.launchGameRoute(it);
+  else if(window.launchBallz && String(it.name||'') === 'Ballz') window.launchBallz();
+  else toast('▶️', 'Play: ' + it.name);
+}catch(err){}
+try{ addUserSession(it.name); }catch(_){}
+try{ addUserBet(it.name); }catch(_){}
 });
 
 tile.addEventListener('click', ()=>{
-if(String(it.name||'') === 'Ballz'){
-  try{
-    (window.launchBallz ? window.launchBallz() : document.getElementById('btnLaunchBallz')?.click());
-  }catch(err){}
-  try{ addUserSession(it.name); }catch(_){}
-  try{ addUserBet(it.name); }catch(_){}
-  return;
-}
 document.querySelectorAll('.tile.selected').forEach(t=>t.classList.remove('selected'));
 tile.classList.add('selected');
-toast('🎮', it.name);
+try{
+  if(window.launchGameRoute) window.launchGameRoute(it);
+  else if(window.launchBallz && String(it.name||'') === 'Ballz') window.launchBallz();
+  else toast('🎮', it.name);
+}catch(err){}
+try{ addUserSession(it.name); }catch(_){}
+try{ addUserBet(it.name); }catch(_){}
 });
 return tile;
 }
@@ -22899,14 +22928,8 @@ body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .gameOverlay{ padding:va
       var lsW = ls ? Math.round(ls.getBoundingClientRect().width) : 0;
       var rsW = rs ? Math.round(rs.getBoundingClientRect().width) : 0;
       var topH = top ? Math.round(top.getBoundingClientRect().height) : 0;
-      var app = byId('app');
-      var leftCollapsed = !!(app && app.classList.contains('left-collapsed'));
-      var rightCollapsed = !!(app && app.classList.contains('right-collapsed'));
-      if(leftCollapsed !== rightCollapsed){
-        var sharedPad = Math.max(lsW, rsW);
-        lsW = sharedPad;
-        rsW = sharedPad;
-      }
+      /* Use true live panel widths so the player stays geometrically centered
+         inside the actual remaining viewport space. */
       document.documentElement.style.setProperty('--ballzLeft', lsW + 'px');
       document.documentElement.style.setProperty('--ballzRight', rsW + 'px');
       document.documentElement.style.setProperty('--ballzTop', topH + 'px');
@@ -22929,7 +22952,8 @@ body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .gameOverlay{ padding:va
 
   function postInitBalances(){
     try{
-      if(!frame || !frame.contentWindow) return;
+      var activeFrame = (gameFrame && gameFrame.contentWindow) ? gameFrame : frame;
+      if(!activeFrame || !activeFrame.contentWindow) return;
       var sc = 0, gc = 0;
       var scEl = byId('scVal');
       var gcEl = byId('gcVal');
@@ -22937,149 +22961,198 @@ body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .gameOverlay{ padding:va
       if(scEl) sc = Number(String(scEl.textContent||'').replace(/[^0-9.]/g,'')) || 0;
       if(gcEl) gc = Number(String(gcEl.textContent||'').replace(/[^0-9.]/g,'')) || 0;
 
-      frame.contentWindow.postMessage({type:'INIT_BALANCES', payload:{sc:sc, gc:gc}}, '*');
+      activeFrame.contentWindow.postMessage({type:'INIT_BALANCES', payload:{sc:sc, gc:gc}}, '*');
     }catch(e){}
   }
 
+  var scrollHost = byId('scroll');
+  var homeRoot = scrollHost ? scrollHost.querySelector('.scrollInner') : null;
+  var gameRoot = null;
+  var gameFrame = null;
+
+  function slugify(v){
+    return String(v||'game').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'') || 'game';
+  }
+  function getBallzLaunchHtml(){
+    try{
+      return tpl ? tpl.innerHTML : '<!doctype html><html><body style="margin:0;background:#05070d;color:#fff;display:grid;place-items:center">Ballz unavailable</body></html>';
+    }catch(e){
+      return '<!doctype html><html><body style="margin:0;background:#05070d;color:#fff;display:grid;place-items:center">Ballz unavailable</body></html>';
+    }
+  }
+  function defaultProviderUrl(meta){
+    var id = encodeURIComponent(meta && meta.id ? meta.id : 'provider-game');
+    return 'https://example.com/launch/' + id;
+  }
+  function getRouteMeta(){
+    var path = String(window.location.pathname||'');
+    var hash = String(window.location.hash||'').replace(/^#/, '');
+    var m = path.match(/\/play\/(provider|original)\/([^/?#]+)/i) || hash.match(/^\/?play\/(provider|original)\/([^/?#]+)/i);
+    if(!m) return null;
+    var type = m[1].toLowerCase();
+    var id = decodeURIComponent(m[2]);
+    var st = history.state && history.state.cltGame ? history.state.cltGame : {};
+    return {
+      type:type,
+      id:id,
+      title: st.title || (id === 'ballz' ? 'Ballz' : id.replace(/-/g,' ')),
+      launchUrl: st.launchUrl || (type === 'original' ? '' : defaultProviderUrl({id:id})),
+      launchHtml: st.launchHtml || (type === 'original' && id === 'ballz' ? getBallzLaunchHtml() : '')
+    };
+  }
+  function isBallzRouteMeta(meta){
+    return !!(meta && meta.type === 'original' && String(meta.id||'').toLowerCase() === 'ballz');
+  }
+  function ensureGameShell(meta){
+    if(!scrollHost) return null;
+    if(!gameRoot || gameRoot.id !== 'routeGameRoot'){
+      gameRoot = document.createElement('div');
+      gameRoot.className = 'scrollInner';
+      gameRoot.id = 'routeGameRoot';
+      gameRoot.innerHTML = '<section class="routeGameShell" id="routeGameShell">'
+        + '<div class="routeGameControls"><div class="routeGameTitle" id="routeGameTitle">Game</div><div class="routeGameBtns">'
+        + '<button class="btn" id="routeTheatreBtn" type="button">Theatre</button>'
+        + '<button class="btn" id="routeFullscreenBtn" type="button">Fullscreen</button>'
+        + '</div></div>'
+        + '<div class="routeGameStage" id="routeGameStage"><iframe class="gameFrame" id="routeGameFrame" title="Game" allow="fullscreen" allowfullscreen></iframe></div>'
+        + '<div class="routeFeed">'
+        + '<section class="panel"><h3>Recommended</h3><p>Suggested games based on this title.</p></section>'
+        + '<section class="panel"><h3>Latest</h3><p>Newly added releases and updates.</p></section>'
+        + '<section class="panel"><h3>Wagers</h3><p>Open challenges tied to this game.</p></section>'
+        + '</div></section>';
+      gameFrame = gameRoot.querySelector('#routeGameFrame');
+      var theatreBtn = gameRoot.querySelector('#routeTheatreBtn');
+      theatreBtn && theatreBtn.addEventListener('click', function(){
+        var shellEl = gameRoot.querySelector('#routeGameShell');
+        shellEl.classList.toggle('theatre');
+        theatreBtn.classList.toggle('active', shellEl.classList.contains('theatre'));
+      });
+      var fullBtn = gameRoot.querySelector('#routeFullscreenBtn');
+      fullBtn && fullBtn.addEventListener('click', async function(){
+        var stage = gameRoot.querySelector('#routeGameStage');
+        if(!stage) return;
+        var doc = document;
+        var isFull = !!(doc.fullscreenElement || doc.webkitFullscreenElement || doc.mozFullScreenElement || doc.msFullscreenElement);
+        if(!isFull){
+          var req = stage.requestFullscreen || stage.webkitRequestFullscreen || stage.mozRequestFullScreen || stage.msRequestFullscreen;
+          if(req){ try{ await req.call(stage); }catch(err){ toastSafe('⚠️','Fullscreen blocked'); } }
+        }else{
+          var ex = doc.exitFullscreen || doc.webkitExitFullscreen || doc.mozCancelFullScreen || doc.msExitFullscreen;
+          if(ex){ try{ await ex.call(doc); }catch(err){} }
+        }
+      });
+    }
+    var titleEl = gameRoot.querySelector('#routeGameTitle');
+    if(titleEl) titleEl.textContent = meta.title || 'Game';
+    if(gameFrame){
+      gameFrame.onload = null;
+      gameFrame.srcdoc = '';
+      gameFrame.src = meta.launchUrl || 'about:blank';
+      gameFrame.title = meta.title || 'Game';
+    }
+    return gameRoot;
+  }
+  function ensureBallzRouteShell(meta){
+    if(!scrollHost || !shell) return null;
+    if(!gameRoot || gameRoot.id !== 'routeBallzRoot'){
+      gameRoot = document.createElement('div');
+      gameRoot.className = 'scrollInner';
+      gameRoot.id = 'routeBallzRoot';
+    }
+    if(shell.parentNode !== gameRoot) gameRoot.appendChild(shell);
+    shell.classList.add('routeMounted');
+    if(overlay){ overlay.classList.remove('show'); overlay.setAttribute('aria-hidden','true'); }
+    document.body.classList.remove('ballzOpen','ballzTheatre','ballzFullscreen');
+    if(frame){
+      frame.removeAttribute('src');
+      frame.srcdoc = meta.launchHtml || getBallzLaunchHtml();
+      frame.onload = function(){ postInitBalances(); };
+    }
+    return gameRoot;
+  }
+  function mountHome(){
+    if(!scrollHost || !homeRoot) return;
+    if(gameRoot && gameRoot.parentNode === scrollHost) scrollHost.removeChild(gameRoot);
+    if(shell && overlay && shell.parentNode !== overlay) overlay.appendChild(shell);
+    if(shell) shell.classList.remove('routeMounted');
+    if(homeRoot.parentNode !== scrollHost) scrollHost.appendChild(homeRoot);
+  }
+  function mountGame(meta){
+    if(!scrollHost || !homeRoot) return;
+    if(homeRoot.parentNode === scrollHost) scrollHost.removeChild(homeRoot);
+    var node = isBallzRouteMeta(meta) ? ensureBallzRouteShell(meta) : ensureGameShell(meta);
+    if(node && node.parentNode !== scrollHost) scrollHost.appendChild(node);
+  }
+  function renderGameRoute(){
+    var meta = getRouteMeta();
+    if(!meta){ mountHome(); return; }
+    mountGame(meta);
+  }
+  function navigateToGame(meta){
+    if(!meta) return;
+    var routePath = '/play/' + meta.type + '/' + meta.id;
+    var routeHash = '#/play/' + meta.type + '/' + meta.id;
+    var pushed = false;
+    try{
+      if(window.location.protocol === 'file:') history.pushState({cltGame:meta}, '', routeHash);
+      else history.pushState({cltGame:meta}, '', routePath);
+      pushed = true;
+    }catch(e){}
+    if(!pushed){
+      try{ window.location.hash = routeHash; pushed = true; }catch(_){ }
+    }
+    renderGameRoute();
+  }
+  function launchGameRoute(it){
+    var name = String((it && it.name) || 'Game');
+    if(/ballz/i.test(name)){
+      navigateToGame({type:'original', id:'ballz', title:'Ballz', launchHtml:getBallzLaunchHtml()});
+      return;
+    }
+    var provider = String((it && it.provider) || 'Provider');
+    var id = slugify(name + '-' + provider);
+    navigateToGame({type:'provider', id:id, title:name, launchUrl:defaultProviderUrl({id:id})});
+  }
   function openBallz(){
-    if(!overlay || !frame || !tpl) return;
-
-    measure();
-
-    overlay.classList.add('show');
-    overlay.setAttribute('aria-hidden','false');
-    document.body.classList.add('ballzOpen');
-    syncBallzRoute(true);
-
-    try{ frame.srcdoc = tpl.innerHTML; }catch(e){}
-    frame.onload = function(){ postInitBalances(); };
+    navigateToGame({type:'original', id:'ballz', title:'Ballz', launchHtml:getBallzLaunchHtml()});
   }
-
   function closeBallz(){
-    if(!overlay || !frame) return;
-
-    overlay.classList.remove('show');
-    overlay.setAttribute('aria-hidden','true');
-    document.body.classList.remove('ballzOpen');
-    document.body.classList.remove('ballzTheatre');
-    document.body.classList.remove('ballzFullscreen');
-    if(btnTheatre) btnTheatre.classList.remove('active');
-    syncBallzRoute(false);
-
-    try{ frame.srcdoc = ''; }catch(e){}
-    measure();
+    try{
+      if(window.location.protocol === 'file:') history.pushState({}, '', '#/');
+      else history.pushState({}, '', '/');
+    }catch(e){
+      try{ window.location.hash = '#/'; }catch(_){ }
+    }
+    renderGameRoute();
   }
 
+  window.launchGameRoute = launchGameRoute;
   window.launchBallz = openBallz;
   window.closeBallz = closeBallz;
   initPlayerDetails();
 
-  if(btnClose){
-    btnClose.addEventListener('click', function(e){
+  var launchBallzBtn = byId('btnLaunchBallz');
+  if(launchBallzBtn){
+    launchBallzBtn.addEventListener('click', function(e){
       e.preventDefault();
-      closeBallz();
+      openBallz();
     });
   }
 
-  if(overlay){
-    overlay.addEventListener('click', function(e){
-      // click outside shell closes
-      if(e.target === overlay) closeBallz();
-    });
-  }
-
-  document.addEventListener('keydown', function(e){
-    if(e.key === 'Escape' && document.body.classList.contains('ballzOpen')){
-      closeBallz();
-    }
-  });
-
-  var leftSidebar = byId('leftSidebar');
-  if(leftSidebar){
-    leftSidebar.addEventListener('click', function(e){
-      var navHit = e.target && e.target.closest ? e.target.closest('.navBtn') : null;
-      if(navHit && document.body.classList.contains('ballzOpen')) closeBallz();
-    });
-  }
-
-  // theatre mode (hide chat panel, widen player)
-  function setTheatre(on){
-    document.body.classList.toggle('ballzTheatre', !!on);
-    if(btnTheatre) btnTheatre.classList.toggle('active', !!on);
-  }
-  if(btnTheatre){
-    btnTheatre.addEventListener('click', function(e){
-      e.preventDefault(); e.stopPropagation();
-      setTheatre(!document.body.classList.contains('ballzTheatre'));
-    });
-  }
-
-  // fullscreen (real browser fullscreen)
-  async function toggleFullscreen(){
-    if(!shell) return;
-
-    var doc = document;
-    var isFull = doc.fullscreenElement || doc.webkitFullscreenElement || doc.mozFullScreenElement || doc.msFullscreenElement;
-
-    if(!isFull){
-      var req = shell.requestFullscreen || shell.webkitRequestFullscreen || shell.mozRequestFullScreen || shell.msRequestFullscreen;
-      if(req){
-        try{ await req.call(shell); }
-        catch(err){ toastSafe('⚠️','Fullscreen blocked'); }
-      }else{
-        toastSafe('⚠️','Fullscreen not supported');
-      }
-    }else{
-      var exit = doc.exitFullscreen || doc.webkitExitFullscreen || doc.mozCancelFullScreen || doc.msExitFullscreen;
-      if(exit){ try{ await exit.call(doc); }catch(err){} }
-    }
-  }
-
-  if(btnFull){
-    btnFull.addEventListener('click', function(e){
-      e.preventDefault(); e.stopPropagation();
-      toggleFullscreen();
-    });
-  }
-
-  function syncFullActive(){
-    try{
-      var doc = document;
-      var active = !!(doc.fullscreenElement || doc.webkitFullscreenElement || doc.mozFullScreenElement || doc.msFullscreenElement);
-      if(btnFull) btnFull.classList.toggle('active', active);
-      if(active) document.body.classList.add('ballzFullscreen');
-      else document.body.classList.remove('ballzFullscreen');
-    }catch(e){}
-  }
-  document.addEventListener('fullscreenchange', syncFullActive);
-  document.addEventListener('webkitfullscreenchange', syncFullActive);
-  document.addEventListener('mozfullscreenchange', syncFullActive);
-  document.addEventListener('MSFullscreenChange', syncFullActive);
-
-  // click-to-launch: capture so other handlers don't steal it
   function tryLaunchFromTarget(t){
     if(!t || !t.closest) return false;
-    var hit = t.closest('.tile.isBallz, .tile[data-name="Ballz"], [data-name="Ballz"], .ballzPoster, #btnLaunchBallz');
-    if(!hit) return false;
-    openBallz();
+    if(t.closest('#btnLaunchBallz')){ openBallz(); return true; }
+    var tile = t.closest('.tile');
+    if(!tile) return false;
+    var name = tile.getAttribute('data-name') || tile.querySelector('.name')?.textContent || 'Game';
+    var isBallz = /ballz/i.test(String(name||'')) || tile.classList.contains('isBallz');
+    if(isBallz){ openBallz(); return true; }
+    var provider = tile.getAttribute('data-provider') || 'Provider';
+    var id = slugify(name + '-' + provider);
+    navigateToGame({type:'provider', id:id, title:String(name), launchUrl:defaultProviderUrl({id:id})});
     return true;
   }
 
-  window.addEventListener('pointerdown', function(e){
-    if(tryLaunchFromTarget(e.target)){
-      e.preventDefault();
-      e.stopPropagation();
-    }
-  }, true);
-
-  window.addEventListener('click', function(e){
-    if(tryLaunchFromTarget(e.target)){
-      e.preventDefault();
-      e.stopPropagation();
-    }
-  }, true);
-
-  // Create-wager bridge from the embedded game
   function initials(name){
     var s = String(name||'').replace(/^@/,'').trim();
     return (s.slice(0,2) || '??').toUpperCase();
@@ -23188,25 +23261,25 @@ body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .gameOverlay{ padding:va
 
   // keep sizing synced for collapses / panel width changes
   window.addEventListener('resize', function(){
-    if(document.body.classList.contains('ballzOpen')) measure();
+    measure();
   });
 
   var collapseLeftBtn = byId('collapseLeftBtn');
   var collapseRightBtn = byId('collapseRightBtn');
   if(collapseLeftBtn){
     collapseLeftBtn.addEventListener('click', function(){
-      if(document.body.classList.contains('ballzOpen')) requestAnimationFrame(measure);
+      requestAnimationFrame(measure);
     });
   }
   if(collapseRightBtn){
     collapseRightBtn.addEventListener('click', function(){
-      if(document.body.classList.contains('ballzOpen')) requestAnimationFrame(measure);
+      requestAnimationFrame(measure);
     });
   }
 
   try{
     var ro = new ResizeObserver(function(){
-      if(document.body.classList.contains('ballzOpen')) measure();
+      measure();
     });
     var topBar = document.querySelector('.top');
     if(topBar) ro.observe(topBar);
@@ -23217,14 +23290,11 @@ body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .gameOverlay{ padding:va
   }catch(e){}
 
   window.addEventListener('popstate', function(){
-    if(window.location.hash === '#game/ballz') openBallz();
-    else if(document.body.classList.contains('ballzOpen')) closeBallz();
+    renderGameRoute();
   });
 
-  // initial measure so offsets are correct even before first open
   measure();
-
-  if(window.location.hash === '#game/ballz') openBallz();
+  renderGameRoute();
 })();
 </script>
 
