@@ -11589,6 +11589,12 @@ function setPage(page){
 if(document.body.classList.contains('ballzOpen') && typeof window.closeBallz === 'function'){
 try{ window.closeBallz(); }catch(_){ }
 }
+// If currently on routed play view, always restore normal app layout first.
+try{
+const onPlayRoute = /\/play\/(provider|original)\//i.test(String(window.location.pathname||''))
+  || /^#\/?play\/(provider|original)\//i.test(String(window.location.hash||''));
+if(onPlayRoute && typeof window.closeBallz === 'function') window.closeBallz();
+}catch(_){ }
 LAST_PAGE = CURRENT_PAGE;
 CURRENT_PAGE = page;
 const isLobby = (page === 'Lobby');
