@@ -22947,7 +22947,8 @@ body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .gameOverlay{ padding:va
 
   function postInitBalances(){
     try{
-      if(!frame || !frame.contentWindow) return;
+      var activeFrame = (gameFrame && gameFrame.contentWindow) ? gameFrame : frame;
+      if(!activeFrame || !activeFrame.contentWindow) return;
       var sc = 0, gc = 0;
       var scEl = byId('scVal');
       var gcEl = byId('gcVal');
@@ -22955,7 +22956,7 @@ body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .gameOverlay{ padding:va
       if(scEl) sc = Number(String(scEl.textContent||'').replace(/[^0-9.]/g,'')) || 0;
       if(gcEl) gc = Number(String(gcEl.textContent||'').replace(/[^0-9.]/g,'')) || 0;
 
-      frame.contentWindow.postMessage({type:'INIT_BALANCES', payload:{sc:sc, gc:gc}}, '*');
+      activeFrame.contentWindow.postMessage({type:'INIT_BALANCES', payload:{sc:sc, gc:gc}}, '*');
     }catch(e){}
   }
 
@@ -22963,18 +22964,16 @@ body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .gameOverlay{ padding:va
   var homeRoot = scrollHost ? scrollHost.querySelector('.scrollInner') : null;
   var gameRoot = null;
   var gameFrame = null;
-  var originalBallzUrl = '';
 
   function slugify(v){
     return String(v||'game').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'') || 'game';
   }
-  function getBallzLaunchUrl(){
-    if(originalBallzUrl) return originalBallzUrl;
+  function getBallzLaunchHtml(){
     try{
-      var html = tpl ? tpl.innerHTML : '<!doctype html><html><body style="margin:0;background:#05070d;color:#fff;display:grid;place-items:center">Ballz unavailable</body></html>';
-      originalBallzUrl = URL.createObjectURL(new Blob([html], {type:'text/html'}));
-      return originalBallzUrl;
-    }catch(e){ return 'about:blank'; }
+      return tpl ? tpl.innerHTML : '<!doctype html><html><body style="margin:0;background:#05070d;color:#fff;display:grid;place-items:center">Ballz unavailable</body></html>';
+    }catch(e){
+      return '<!doctype html><html><body style="margin:0;background:#05070d;color:#fff;display:grid;place-items:center">Ballz unavailable</body></html>';
+    }
   }
   function defaultProviderUrl(meta){
     var id = encodeURIComponent(meta && meta.id ? meta.id : 'provider-game');
@@ -22992,7 +22991,8 @@ body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .gameOverlay{ padding:va
       type:type,
       id:id,
       title: st.title || (id === 'ballz' ? 'Ballz' : id.replace(/-/g,' ')),
-      launchUrl: st.launchUrl || (type === 'original' ? getBallzLaunchUrl() : defaultProviderUrl({id:id}))
+      launchUrl: st.launchUrl || (type === 'original' ? '' : defaultProviderUrl({id:id})),
+      launchHtml: st.launchHtml || (type === 'original' ? getBallzLaunchHtml() : '')
     };
   }
   function ensureGameShell(meta){
@@ -23037,8 +23037,15 @@ body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .gameOverlay{ padding:va
     var titleEl = gameRoot.querySelector('#routeGameTitle');
     if(titleEl) titleEl.textContent = meta.title || 'Game';
     if(gameFrame){
-      gameFrame.srcdoc = '';
-      gameFrame.src = meta.launchUrl || 'about:blank';
+      if(meta.launchHtml){
+        gameFrame.removeAttribute('src');
+        gameFrame.srcdoc = meta.launchHtml;
+        gameFrame.onload = function(){ postInitBalances(); };
+      }else{
+        gameFrame.onload = null;
+        gameFrame.srcdoc = '';
+        gameFrame.src = meta.launchUrl || 'about:blank';
+      }
       gameFrame.title = meta.title || 'Game';
     }
     return gameRoot;
@@ -23077,7 +23084,7 @@ body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .gameOverlay{ padding:va
   function launchGameRoute(it){
     var name = String((it && it.name) || 'Game');
     if(/ballz/i.test(name)){
-      navigateToGame({type:'original', id:'ballz', title:'Ballz', launchUrl:getBallzLaunchUrl()});
+      navigateToGame({type:'original', id:'ballz', title:'Ballz', launchHtml:getBallzLaunchHtml()});
       return;
     }
     var provider = String((it && it.provider) || 'Provider');
@@ -23085,7 +23092,7 @@ body.ballzOpen:not(.ballzTheatre):not(.ballzFullscreen) .gameOverlay{ padding:va
     navigateToGame({type:'provider', id:id, title:name, launchUrl:defaultProviderUrl({id:id})});
   }
   function openBallz(){
-    navigateToGame({type:'original', id:'ballz', title:'Ballz', launchUrl:getBallzLaunchUrl()});
+    navigateToGame({type:'original', id:'ballz', title:'Ballz', launchHtml:getBallzLaunchHtml()});
   }
   function closeBallz(){
     try{
